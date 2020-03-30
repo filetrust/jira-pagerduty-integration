@@ -23,6 +23,11 @@ functions:
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
+  cron:
+    handler: handler.run
+    events:
+      # Invoke Lambda function every minute
+      - schedule: rate(1 hour)
 
 plugins:
   - serverless-python-requirements
