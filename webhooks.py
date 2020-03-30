@@ -20,7 +20,7 @@ def link_issue(outward, inward, link_type):
     """
     jira = utils.get_jira()
     try:
-        response = jira.create_issue_link(link_type, inward, outward)
+        jira.create_issue_link(link_type, inward, outward)
     except JIRAError as error:
         logger.exception(
             f'Error occurred during creating a link between "{outward}" '
