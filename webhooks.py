@@ -53,9 +53,9 @@ def handle_triggered_incident(message):
             issue_dict[severity_field_id] = {'value': severity_field_value}
         issue = jira.create_issue(fields=issue_dict)
         db.put_incident_issue_relation(incident['id'], issue.key)
-        link_questions = os.environ.get('JIRA_ISSUE_LINK_QUESTIONS', '')
-        link_questions = [q for q in link_questions.split(',') if q]
-        for q in link_questions:
+        questions = os.environ.get('JIRA_ISSUE_QUESTIONS', '')
+        questions = [q for q in questions.split(',') if q]
+        for q in questions:
             link_issue(q, issue.key, 'has question')
 
 
