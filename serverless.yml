@@ -13,7 +13,7 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
-        - { "Fn::GetAtt": ["IncidentsTable", "Arn" ] }
+        - "*"
   environment:
     INCIDENTS_TABLE: ${self:custom.incidentsTableName}
 
