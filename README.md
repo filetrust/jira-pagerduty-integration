@@ -3,16 +3,16 @@
 Clone the project:
 
 ```
-git clone git@github.com:filetrust/gw-proxy-serverless.git
+git clone git@github.com:filetrust/jira-pagerduty-integration.git
 ```
 
 and cd to the project directory:
 
 ```
-cd pagerduty-jira-synchronization
+cd jira-pagerduty-integration
 ```
 
-##Make and activate a virtual environment:
+## Make and activate a virtual environment:
 
 ```
 python -m venv env
@@ -123,7 +123,7 @@ when a new incident is created.
 
 
 
-#Local Development
+# Local Development
 
 For agile development good idea to setup development local-based environment,
 which complete resembling the production, based on serverless/AWS stack.

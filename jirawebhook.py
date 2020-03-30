@@ -1,5 +1,3 @@
-import os
-
 import db
 import utils
 

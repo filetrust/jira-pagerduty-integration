@@ -29,3 +29,6 @@ serverless_sdk
 
 # nodejs
 /node_modules
+
+#Jetbrains
+.idea
