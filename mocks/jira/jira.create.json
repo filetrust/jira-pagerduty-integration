@@ -1,0 +1,282 @@
+{
+  "body": {
+    "timestamp": 1585307871334,
+    "webhookEvent": "jira:issue_created",
+    "issue_event_type_name": "issue_created",
+    "user": {
+      "self": "https://olegtaranenko.atlassian.net/rest/api/2/user?accountId=557058%3A836da901-f3fe-4d30-9074-8b44ca4ea497",
+      "accountId": "557058:836da901-f3fe-4d30-9074-8b44ca4ea497",
+      "avatarUrls": {
+        "48x48": "https://secure.gravatar.com/avatar/8198c3fe8bcf630312bad4a7977e5e54?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FOT-5.png&size=48&s=48",
+        "24x24": "https://secure.gravatar.com/avatar/8198c3fe8bcf630312bad4a7977e5e54?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FOT-5.png&size=24&s=24",
+        "16x16": "https://secure.gravatar.com/avatar/8198c3fe8bcf630312bad4a7977e5e54?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FOT-5.png&size=16&s=16",
+        "32x32": "https://secure.gravatar.com/avatar/8198c3fe8bcf630312bad4a7977e5e54?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FOT-5.png&size=32&s=32"
+      },
+      "displayName": "Oleg Taranenko",
+      "active": true,
+      "timeZone": "Europe/Berlin",
+      "accountType": "atlassian"
+    },
+    "issue": {
+      "id": "10002",
+      "self": "https://olegtaranenko.atlassian.net/rest/api/2/10002",
+      "key": "PJS-3",
+      "fields": {
+        "statuscategorychangedate": "2020-03-27T12:17:51.440+0100",
+        "issuetype": {
+          "self": "https://olegtaranenko.atlassian.net/rest/api/2/issuetype/10005",
+          "id": "10005",
+          "description": "A problem or error.",
+          "iconUrl": "https://olegtaranenko.atlassian.net/secure/viewavatar?size=medium&avatarId=10303&avatarType=issuetype",
+          "name": "Bug",
+          "subtask": false,
+          "avatarId": 10303
+        },
+        "timespent": null,
+        "project": {
+          "self": "https://olegtaranenko.atlassian.net/rest/api/2/project/10000",
+          "id": "10000",
+          "key": "PJS",
+          "name": "PagerDuty Jira Sync",
+          "projectTypeKey": "software",
+          "simplified": false,
+          "avatarUrls": {
+            "48x48": "https://olegtaranenko.atlassian.net/secure/projectavatar?pid=10000&avatarId=10423",
+            "24x24": "https://olegtaranenko.atlassian.net/secure/projectavatar?size=small&s=small&pid=10000&avatarId=10423",
+            "16x16": "https://olegtaranenko.atlassian.net/secure/projectavatar?size=xsmall&s=xsmall&pid=10000&avatarId=10423",
+            "32x32": "https://olegtaranenko.atlassian.net/secure/projectavatar?size=medium&s=medium&pid=10000&avatarId=10423"
+          }
+        },
+        "fixVersions": [],
+        "aggregatetimespent": null,
+        "resolution": null,
+        "resolutiondate": null,
+        "workratio": 0,
+        "lastViewed": null,
+        "watches": {
+          "self": "https://olegtaranenko.atlassian.net/rest/api/2/issue/PJS-3/watchers",
+          "watchCount": 0,
+          "isWatching": true
+        },
+        "created": "2020-03-27T12:17:51.280+0100",
+        "customfield_10020": null,
+        "customfield_10021": null,
+        "customfield_10022": null,
+        "priority": {
+          "self": "https://olegtaranenko.atlassian.net/rest/api/2/priority/3",
+          "iconUrl": "https://olegtaranenko.atlassian.net/images/icons/priorities/medium.svg",
+          "name": "Medium",
+          "id": "3"
+        },
+        "customfield_10023": null,
+        "labels": [],
+        "customfield_10016": null,
+        "customfield_10017": null,
+        "customfield_10018": {
+          "hasEpicLinkFieldDependency": false,
+          "showField": false,
+          "nullditableReason": {
+            "reason": "PLUGIN_LICENSE_ERROR",
+            "message": "Portfolio for Jira must be licensed for the Parent Link to be available."
+          }
+        },
+        "customfield_10019": "0|i0000f:",
+        "aggregatetimeoriginalestimate": 28800,
+        "timeestimate": 28800,
+        "versions": [],
+        "issuelinks": [],
+        "assignee": null,
+        "updated": "2020-03-27T12:17:51.280+0100",
+        "status": {
+          "self": "https://olegtaranenko.atlassian.net/rest/api/2/status/10000",
+          "description": "",
+          "iconUrl": "https://olegtaranenko.atlassian.net/",
+          "name": "To Do",
+          "id": "10000",
+          "statusCategory": {
+            "self": "https://olegtaranenko.atlassian.net/rest/api/2/statuscategory/2",
+            "id": 2,
+            "key": "new",
+            "colorName": "blue-gray",
+            "name": "New"
+          }
+        },
+        "components": [],
+        "timeoriginalestimate": 28800,
+        "description": "to test webhook",
+        "customfield_10010": null,
+        "customfield_10014": null,
+        "customfield_10015": null,
+        "timetracking": {
+          "originalEstimate": "1d",
+          "remainingEstimate": "1d",
+          "originalEstimateSeconds": 28800,
+          "remainingEstimateSeconds": 28800
+        },
+        "customfield_10005": null,
+        "customfield_10006": null,
+        "security": null,
+        "customfield_10007": null,
+        "customfield_10008": null,
+        "aggregatetimeestimate": 28800,
+        "customfield_10009": null,
+        "attachment": [],
+        "summary": "Create new JIRA ticket...",
+        "creator": {
+          "self": "https://olegtaranenko.atlassian.net/rest/api/2/user?accountId=557058%3A836da901-f3fe-4d30-9074-8b44ca4ea497",
+          "accountId": "557058:836da901-f3fe-4d30-9074-8b44ca4ea497",
+          "avatarUrls": {
+            "48x48": "https://secure.gravatar.com/avatar/8198c3fe8bcf630312bad4a7977e5e54?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FOT-5.png&size=48&s=48",
+            "24x24": "https://secure.gravatar.com/avatar/8198c3fe8bcf630312bad4a7977e5e54?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FOT-5.png&size=24&s=24",
+            "16x16": "https://secure.gravatar.com/avatar/8198c3fe8bcf630312bad4a7977e5e54?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FOT-5.png&size=16&s=16",
+            "32x32": "https://secure.gravatar.com/avatar/8198c3fe8bcf630312bad4a7977e5e54?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FOT-5.png&size=32&s=32"
+          },
+          "displayName": "Oleg Taranenko",
+          "active": true,
+          "timeZone": "Europe/Berlin",
+          "accountType": "atlassian"
+        },
+        "subtasks": [],
+        "reporter": {
+          "self": "https://olegtaranenko.atlassian.net/rest/api/2/user?accountId=557058%3A836da901-f3fe-4d30-9074-8b44ca4ea497",
+          "accountId": "557058:836da901-f3fe-4d30-9074-8b44ca4ea497",
+          "avatarUrls": {
+            "48x48": "https://secure.gravatar.com/avatar/8198c3fe8bcf630312bad4a7977e5e54?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FOT-5.png&size=48&s=48",
+            "24x24": "https://secure.gravatar.com/avatar/8198c3fe8bcf630312bad4a7977e5e54?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FOT-5.png&size=24&s=24",
+            "16x16": "https://secure.gravatar.com/avatar/8198c3fe8bcf630312bad4a7977e5e54?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FOT-5.png&size=16&s=16",
+            "32x32": "https://secure.gravatar.com/avatar/8198c3fe8bcf630312bad4a7977e5e54?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FOT-5.png&size=32&s=32"
+          },
+          "displayName": "Oleg Taranenko",
+          "active": true,
+          "timeZone": "Europe/Berlin",
+          "accountType": "atlassian"
+        },
+        "aggregateprogress": {
+          "progress": 0,
+          "total": 28800,
+          "percent": 0
+        },
+        "customfield_10000": "{}",
+        "customfield_10001": null,
+        "customfield_10002": null,
+        "customfield_10003": null,
+        "customfield_10004": null,
+        "environment": null,
+        "duedate": null,
+        "progress": {
+          "progress": 0,
+          "total": 28800,
+          "percent": 0
+        },
+        "votes": {
+          "self": "https://olegtaranenko.atlassian.net/rest/api/2/issue/PJS-3/votes",
+          "votes": 0,
+          "hasVoted": false
+        }
+      }
+    },
+    "changelog": {
+      "id": "10002",
+      "items": [
+        {
+          "field": "description",
+          "fieldtype": "jira",
+          "fieldId": "description",
+          "from": null,
+          "fromString": null,
+          "to": null,
+          "toString": "to test webhook"
+        },
+        {
+          "field": "priority",
+          "fieldtype": "jira",
+          "fieldId": "priority",
+          "from": null,
+          "fromString": null,
+          "to": "3",
+          "toString": "Medium"
+        },
+        {
+          "field": "reporter",
+          "fieldtype": "jira",
+          "fieldId": "reporter",
+          "from": null,
+          "fromString": null,
+          "to": "557058:836da901-f3fe-4d30-9074-8b44ca4ea497",
+          "toString": "Oleg Taranenko",
+          "tmpFromAccountId": null,
+          "tmpToAccountId": "557058:836da901-f3fe-4d30-9074-8b44ca4ea497"
+        },
+        {
+          "field": "Status",
+          "fieldtype": "jira",
+          "fieldId": "status",
+          "from": null,
+          "fromString": null,
+          "to": "10000",
+          "toString": "To Do"
+        },
+        {
+          "field": "summary",
+          "fieldtype": "jira",
+          "fieldId": "summary",
+          "from": null,
+          "fromString": null,
+          "to": null,
+          "toString": "Create new JIRA ticket..."
+        }
+      ]
+    }
+  },
+  "method": "POST",
+  "principalId": "",
+  "stage": "dev",
+  "cognitoPoolClaims": {
+    "sub": ""
+  },
+  "enhancedAuthContext": {},
+  "headers": {
+    "Accept": "*/*",
+    "Accept-Encoding": "gzip,deflate",
+    "CloudFront-Forwarded-Proto": "https",
+    "CloudFront-Is-Desktop-Viewer": "true",
+    "CloudFront-Is-Mobile-Viewer": "false",
+    "CloudFront-Is-SmartTV-Viewer": "false",
+    "CloudFront-Is-Tablet-Viewer": "false",
+    "CloudFront-Viewer-Country": "IE",
+    "Content-Type": "application/json; charset=UTF-8",
+    "Host": "kdczxckfy4.execute-api.us-east-1.amazonaws.com",
+    "User-Agent": "Atlassian Webhook HTTP Client",
+    "Via": "1.1 5375075eb87a09bb90c63fb4a8d064f4.cloudfront.net (CloudFront)",
+    "X-Amz-Cf-Id": "SPd2BsK57Hnkb-nH_yWQthlnXA4beb0LVF4wSYS6qkFPXsW4CAqPNA==",
+    "X-Amzn-Trace-Id": "Root=1-5e7de0df-d1af2e3638f386b4134b9e66",
+    "X-Atlassian-Webhook-Identifier": "2",
+    "X-B3-Sampled": "1",
+    "X-B3-SpanId": "fbcf325372ebb0ea",
+    "X-B3-TraceId": "fbcf325372ebb0ea",
+    "X-Forwarded-For": "52.215.192.224, 64.252.133.75",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https"
+  },
+  "query": {
+    "user_id": "olegtaranenko",
+    "user_key": "olegtaranenko"
+  },
+  "path": {},
+  "identity": {
+    "cognitoIdentityPoolId": "",
+    "accountId": "",
+    "cognitoIdentityId": "",
+    "caller": "",
+    "sourceIp": "52.215.192.224",
+    "principalOrgId": "",
+    "accessKey": "",
+    "cognitoAuthenticationType": "",
+    "cognitoAuthenticationProvider": "",
+    "userArn": "",
+    "userAgent": "Atlassian Webhook HTTP Client",
+    "user": ""
+  },
+  "stageVariables": {},
+  "requestPath": "/jira-webhook"
+}

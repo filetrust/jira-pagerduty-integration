@@ -1,0 +1,91 @@
+service: pjsync
+
+provider:
+  name: aws
+  runtime: python3.7
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": ["IncidentsTable", "Arn" ] }
+  environment:
+    INCIDENTS_TABLE: ${self:custom.incidentsTableName}
+
+functions:
+  app:
+    handler: wsgi_handler.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
+
+plugins:
+  - serverless-python-requirements
+  - serverless-dotenv-plugin
+  - serverless-wsgi
+  - serverless-dynamodb-local
+
+custom:
+  incidentsTableName: 'incidents-${self:provider.stage}'
+  wsgi:
+    app: app.app
+    packRequirements: false
+    pythonBin: python3
+  pythonRequirements:
+    dockerizePip: true
+  dynamodb:
+    start:
+      port: 8002
+      inMemory: true
+      migrate: true
+    stages:
+      - dev
+      - test
+
+package:
+  exclude:
+    - env/**
+
+resources:
+  Resources:
+    IncidentsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.incidentsTableName}
+        AttributeDefinitions:
+          - AttributeName: incidentId
+            AttributeType: S
+          - AttributeName: issueKey
+            AttributeType: S
+        KeySchema:
+          - AttributeName: incidentId
+            KeyType: HASH
+          - AttributeName: issueKey
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: issueKey
+            Projection:
+              ProjectionType: ALL
+            KeySchema:
+              - AttributeName: issueKey
+                KeyType: HASH
+            ProvisionedThroughput:
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
+          - IndexName: incidentId
+            Projection:
+              ProjectionType: ALL
+            KeySchema:
+              - AttributeName: incidentId
+                KeyType: HASH
+            ProvisionedThroughput:
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
