@@ -1,9 +1,9 @@
-import json
 import logging
 
 from flask import Flask, jsonify, request
 
-import webhooks, jirawebhook
+import jirawebhook
+import webhooks
 
 app = Flask(__name__)
 logger = logging.getLogger()
@@ -17,7 +17,7 @@ def pagerduty_webhook():
         webhooks.pagerduty(request.json)
     except Exception as e:
         logger.exception(
-            'Error occured during processing of a PagerDuty webhook')
+            'Error occurred during processing of a PagerDuty webhook')
         response = {
             'ok': False,
             'error': repr(e),
@@ -32,7 +32,7 @@ def jira_webhook():
         jirawebhook.jira(request.json)
     except Exception as e:
         logger.exception(
-            'Error occured during processing of a Jira webhook')
+            'Error occurred during processing of a Jira webhook')
         response = {
             'ok': False,
             'error': repr(e),
