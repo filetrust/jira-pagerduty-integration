@@ -80,7 +80,6 @@ def handle_resolved_incident(message):
 
 
 def pagerduty(event):
-
     """
     A webhook that should be used by PagerDuty.
     """
