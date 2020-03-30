@@ -57,6 +57,10 @@ def handle_triggered_incident(message):
         link_questions = [q for q in link_questions.split(',') if q]
         for q in link_questions:
             link_issue(q, issue.key, 'has question')
+        stakeholders = os.environ.get('JIRA_ISSUE_STAKEHOLDERS', '')
+        stakeholders = [q for q in stakeholders.split(',') if q]
+        for s in stakeholders:
+            link_issue(s, issue.key, 'has stakeholder')
 
 
 def handle_resolved_incident(message):
