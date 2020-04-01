@@ -19,6 +19,7 @@ def handle_triggered_incident(message):
         severity_field_id = severity_fields[0]['id']
     entries = message.get('log_entries', [])
     severity_field_value = 'SEV-0'
+    issue_key=None
     for entry in entries:
         issue_dict = {
             'project': {'key': os.environ['JIRA_PROJECT_KEY']},
@@ -30,7 +31,9 @@ def handle_triggered_incident(message):
         if severity_field_id:
             issue_dict[severity_field_id] = {'value': severity_field_value}
         issue = jira.create_issue(fields=issue_dict)
-        db.put_incident_issue_relation(incident['id'], issue.key)
+        issue_key = issue.key
+        db.put_incident_issue_relation(incident['id'], issue_key)
+    return issue_key
 
 
 def handle_resolved_incident(message):

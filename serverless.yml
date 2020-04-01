@@ -28,7 +28,6 @@ functions:
   cron:
     handler: pd_cron.run
     events:
-      # Invoke Lambda function every minute
       - schedule: 'rate(${self:provider.cronInterval})'
 
 plugins:
