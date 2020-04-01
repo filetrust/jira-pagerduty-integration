@@ -1,0 +1,93 @@
+{
+  "incidents": [
+    {
+      "incident_number": 50,
+      "title": "Title for JIRA",
+      "description": "Title for JIRA",
+      "created_at": "2020-03-31T13:08:54Z",
+      "status": "triggered",
+      "incident_key": "4ddd3f94332349c18193d6bded4c0119",
+      "service": {
+        "id": "PYXWIKB",
+        "type": "service_reference",
+        "summary": "Glasswall testing",
+        "self": "https://api.pagerduty.com/services/PYXWIKB",
+        "html_url": "https://olegtaranenko.pagerduty.com/services/PYXWIKB"
+      },
+      "assignments": [
+        {
+          "at": "2020-03-31T13:08:54Z",
+          "assignee": {
+            "id": "PZAR242",
+            "type": "user_reference",
+            "summary": "Oleg Taranenko",
+            "self": "https://api.pagerduty.com/users/PZAR242",
+            "html_url": "https://olegtaranenko.pagerduty.com/users/PZAR242"
+          }
+        }
+      ],
+      "assigned_via": "escalation_policy",
+      "last_status_change_at": "2020-03-31T13:08:54Z",
+      "first_trigger_log_entry": {
+        "id": "ROBV8CY9DU5SVC1LRCC6N80054",
+        "type": "trigger_log_entry_reference",
+        "summary": "Triggered through the website",
+        "self": "https://api.pagerduty.com/log_entries/ROBV8CY9DU5SVC1LRCC6N80054",
+        "html_url": "https://olegtaranenko.pagerduty.com/incidents/PNVJU3H/log_entries/ROBV8CY9DU5SVC1LRCC6N80054"
+      },
+      "alert_counts": {
+        "all": 0,
+        "triggered": 0,
+        "resolved": 0
+      },
+      "is_mergeable": true,
+      "escalation_policy": {
+        "id": "PQCNPVG",
+        "type": "escalation_policy_reference",
+        "summary": "Default",
+        "self": "https://api.pagerduty.com/escalation_policies/PQCNPVG",
+        "html_url": "https://olegtaranenko.pagerduty.com/escalation_policies/PQCNPVG"
+      },
+      "teams": [],
+      "pending_actions": [],
+      "acknowledgements": [],
+      "basic_alert_grouping": null,
+      "alert_grouping": null,
+      "last_status_change_by": {
+        "id": "PYXWIKB",
+        "type": "service_reference",
+        "summary": "Glasswall testing",
+        "self": "https://api.pagerduty.com/services/PYXWIKB",
+        "html_url": "https://olegtaranenko.pagerduty.com/services/PYXWIKB"
+      },
+      "priority": {
+        "id": "PRF17AB",
+        "type": "priority",
+        "summary": "P1",
+        "self": "https://api.pagerduty.com/priorities/PRF17AB",
+        "html_url": null,
+        "account_id": "PBLMC4C",
+        "color": "a8171c",
+        "created_at": "2020-03-25T05:38:48Z",
+        "description": "Prio 1",
+        "name": "P1",
+        "order": 67108864,
+        "schema_version": 0,
+        "updated_at": "2020-03-25T05:39:36Z"
+      },
+      "incidents_responders": [],
+      "responder_requests": [],
+      "subscriber_requests": [],
+      "urgency": "high",
+      "id": "PNVJU3H",
+      "type": "incident",
+      "summary": "[#50] Title for JIRA",
+      "self": "https://api.pagerduty.com/incidents/PNVJU3H",
+      "html_url": "https://olegtaranenko.pagerduty.com/incidents/PNVJU3H"
+    }
+  ],
+  "limit": 25,
+  "offset": 0,
+  "total": null,
+  "more": false
+}

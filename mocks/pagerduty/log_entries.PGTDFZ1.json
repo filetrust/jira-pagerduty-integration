@@ -1,0 +1,179 @@
+{
+  "log_entries": [
+    {
+      "id": "RR7M3C5G18FDXIGQAQK84DSKKV",
+      "type": "notify_log_entry",
+      "summary": "Notified Oleg Taranenko by email",
+      "self": "https://api.pagerduty.com/log_entries/RR7M3C5G18FDXIGQAQK84DSKKV",
+      "html_url": null,
+      "created_at": "2020-03-31T16:09:08Z",
+      "channel": {
+        "type": "auto",
+        "notification": {
+          "type": "email",
+          "address": "olegtaranenko@gmail.com",
+          "conferenceAddress": null,
+          "status": "success"
+        }
+      },
+      "service": {
+        "id": "PYXWIKB",
+        "type": "service_reference",
+        "summary": "Glasswall testing",
+        "self": "https://api.pagerduty.com/services/PYXWIKB",
+        "html_url": "https://olegtaranenko.pagerduty.com/services/PYXWIKB"
+      },
+      "incident": {
+        "id": "PGTDFZ1",
+        "type": "incident_reference",
+        "summary": "[#53] Print message, not incident only",
+        "self": "https://api.pagerduty.com/incidents/PGTDFZ1",
+        "html_url": "https://olegtaranenko.pagerduty.com/incidents/PGTDFZ1"
+      },
+      "teams": [],
+      "contexts": [],
+      "user": {
+        "id": "PZAR242",
+        "type": "user_reference",
+        "summary": "Oleg Taranenko",
+        "self": "https://api.pagerduty.com/users/PZAR242",
+        "html_url": "https://olegtaranenko.pagerduty.com/users/PZAR242"
+      }
+    },
+    {
+      "id": "R5XTMGU8DD2OLMHXZ7SV1YW5O8",
+      "type": "priority_change_log_entry",
+      "summary": "Priority set to \"P1\" by Oleg Taranenko",
+      "self": "https://api.pagerduty.com/log_entries/R5XTMGU8DD2OLMHXZ7SV1YW5O8",
+      "html_url": null,
+      "created_at": "2020-03-31T16:09:03Z",
+      "agent": {
+        "id": "PZAR242",
+        "type": "user_reference",
+        "summary": "Oleg Taranenko",
+        "self": "https://api.pagerduty.com/users/PZAR242",
+        "html_url": "https://olegtaranenko.pagerduty.com/users/PZAR242"
+      },
+      "channel": {
+        "type": "website",
+        "old_priority": null,
+        "new_priority": {
+          "id": "PRF17AB",
+          "type": "priority",
+          "summary": "P1",
+          "self": "https://api.pagerduty.com/priorities/PRF17AB",
+          "html_url": null,
+          "account_id": "PBLMC4C",
+          "color": "a8171c",
+          "created_at": "2020-03-25T05:38:48Z",
+          "description": "Prio 1",
+          "name": "P1",
+          "order": 67108864,
+          "schema_version": 0,
+          "updated_at": "2020-03-25T05:39:36Z"
+        }
+      },
+      "service": {
+        "id": "PYXWIKB",
+        "type": "service_reference",
+        "summary": "Glasswall testing",
+        "self": "https://api.pagerduty.com/services/PYXWIKB",
+        "html_url": "https://olegtaranenko.pagerduty.com/services/PYXWIKB"
+      },
+      "incident": {
+        "id": "PGTDFZ1",
+        "type": "incident_reference",
+        "summary": "[#53] Print message, not incident only",
+        "self": "https://api.pagerduty.com/incidents/PGTDFZ1",
+        "html_url": "https://olegtaranenko.pagerduty.com/incidents/PGTDFZ1"
+      },
+      "teams": [],
+      "contexts": []
+    },
+    {
+      "id": "R0X8SOYHF5T4NCHOWMAIQ96OQB",
+      "type": "assign_log_entry",
+      "summary": "Assigned to Oleg Taranenko",
+      "self": "https://api.pagerduty.com/log_entries/R0X8SOYHF5T4NCHOWMAIQ96OQB",
+      "html_url": null,
+      "created_at": "2020-03-31T16:09:03Z",
+      "agent": {
+        "id": "PYXWIKB",
+        "type": "service_reference",
+        "summary": "Glasswall testing",
+        "self": "https://api.pagerduty.com/services/PYXWIKB",
+        "html_url": "https://olegtaranenko.pagerduty.com/services/PYXWIKB"
+      },
+      "channel": {
+        "type": "auto"
+      },
+      "service": {
+        "id": "PYXWIKB",
+        "type": "service_reference",
+        "summary": "Glasswall testing",
+        "self": "https://api.pagerduty.com/services/PYXWIKB",
+        "html_url": "https://olegtaranenko.pagerduty.com/services/PYXWIKB"
+      },
+      "incident": {
+        "id": "PGTDFZ1",
+        "type": "incident_reference",
+        "summary": "[#53] Print message, not incident only",
+        "self": "https://api.pagerduty.com/incidents/PGTDFZ1",
+        "html_url": "https://olegtaranenko.pagerduty.com/incidents/PGTDFZ1"
+      },
+      "teams": [],
+      "contexts": [],
+      "assignees": [
+        {
+          "id": "PZAR242",
+          "type": "user_reference",
+          "summary": "Oleg Taranenko",
+          "self": "https://api.pagerduty.com/users/PZAR242",
+          "html_url": "https://olegtaranenko.pagerduty.com/users/PZAR242"
+        }
+      ]
+    },
+    {
+      "id": "R7QG5XCAB2IN39I7FZ1IEK8E38",
+      "type": "trigger_log_entry",
+      "summary": "Triggered through the website",
+      "self": "https://api.pagerduty.com/log_entries/R7QG5XCAB2IN39I7FZ1IEK8E38",
+      "html_url": "https://olegtaranenko.pagerduty.com/incidents/PGTDFZ1/log_entries/R7QG5XCAB2IN39I7FZ1IEK8E38",
+      "created_at": "2020-03-31T16:09:03Z",
+      "agent": {
+        "id": "PZAR242",
+        "type": "user_reference",
+        "summary": "Oleg Taranenko",
+        "self": "https://api.pagerduty.com/users/PZAR242",
+        "html_url": "https://olegtaranenko.pagerduty.com/users/PZAR242"
+      },
+      "channel": {
+        "type": "web_trigger",
+        "summary": "Print message, not incident only"
+      },
+      "service": {
+        "id": "PYXWIKB",
+        "type": "service_reference",
+        "summary": "Glasswall testing",
+        "self": "https://api.pagerduty.com/services/PYXWIKB",
+        "html_url": "https://olegtaranenko.pagerduty.com/services/PYXWIKB"
+      },
+      "incident": {
+        "id": "PGTDFZ1",
+        "type": "incident_reference",
+        "summary": "[#53] Print message, not incident only",
+        "self": "https://api.pagerduty.com/incidents/PGTDFZ1",
+        "html_url": "https://olegtaranenko.pagerduty.com/incidents/PGTDFZ1"
+      },
+      "teams": [],
+      "contexts": [],
+      "event_details": {
+        "description": "Print message, not incident only"
+      }
+    }
+  ],
+  "limit": 100,
+  "offset": 0,
+  "more": false,
+  "total": null
+}

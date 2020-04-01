@@ -14,8 +14,10 @@ provider:
         - dynamodb:DeleteItem
       Resource:
         - "*"
+  cronInterval: ${env:PAGERDUTY_CRON_INTERVAL}
   environment:
     INCIDENTS_TABLE: ${self:custom.incidentsTableName}
+    CRON_TABLE: ${self:custom.cronTableName}
 
 functions:
   app:
@@ -24,10 +26,10 @@ functions:
       - http: ANY /
       - http: 'ANY {proxy+}'
   cron:
-    handler: handler.run
+    handler: pd_cron.run
     events:
       # Invoke Lambda function every minute
-      - schedule: rate(1 hour)
+      - schedule: 'rate(${self:provider.cronInterval})'
 
 plugins:
   - serverless-python-requirements
@@ -37,6 +39,7 @@ plugins:
 
 custom:
   incidentsTableName: 'incidents-${self:provider.stage}'
+  cronTableName: 'cron-${self:provider.stage}'
   wsgi:
     app: app.app
     packRequirements: false
@@ -58,6 +61,19 @@ package:
 
 resources:
   Resources:
+    CronTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.cronTableName}
+        AttributeDefinitions:
+          - AttributeName: incidentId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: incidentId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
     IncidentsTable:
       Type: AWS::DynamoDB::Table
       Properties:
