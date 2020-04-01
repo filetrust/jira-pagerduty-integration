@@ -17,7 +17,7 @@ provider:
   cronInterval: ${env:PAGERDUTY_CRON_INTERVAL}
   environment:
     INCIDENTS_TABLE: ${self:custom.incidentsTableName}
-    CRON_TABLE: ${self:custom.cronTableName}
+    LOW_PRIO_INCIDENTS_TABLE: ${self:custom.cronTableName}
 
 functions:
   app:
@@ -38,7 +38,7 @@ plugins:
 
 custom:
   incidentsTableName: 'incidents-${self:provider.stage}'
-  cronTableName: 'cron-${self:provider.stage}'
+  cronTableName: 'low-prio-incidents-${self:provider.stage}'
   wsgi:
     app: app.app
     packRequirements: false
@@ -60,7 +60,7 @@ package:
 
 resources:
   Resources:
-    CronTable:
+    LowPrioIncidentsTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:custom.cronTableName}

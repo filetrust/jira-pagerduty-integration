@@ -4,7 +4,7 @@ import boto3
 from boto3.dynamodb.conditions import Key
 
 INCIDENTS_TABLE = os.environ['INCIDENTS_TABLE']
-CRON_TABLE = os.environ['CRON_TABLE']
+LOW_PRIO_INCIDENTS_TABLE = os.environ['LOW_PRIO_INCIDENTS_TABLE']
 IS_OFFLINE = os.environ.get('IS_OFFLINE')
 
 if IS_OFFLINE:
@@ -73,8 +73,8 @@ def delete_relation_by_issue_key(issue_key):
         )
 
 
-def put_cron_incident(incident_id, priority):
-    cron = resource.Table(CRON_TABLE)
+def put_low_prio_incident(incident_id, priority):
+    cron = resource.Table(LOW_PRIO_INCIDENTS_TABLE)
     return cron.put_item(
         Item={
             'incidentId': incident_id,
@@ -84,7 +84,7 @@ def put_cron_incident(incident_id, priority):
 
 
 def get_priority_by_incident_id(incident_id):
-    cron = resource.Table(CRON_TABLE)
+    cron = resource.Table(LOW_PRIO_INCIDENTS_TABLE)
     response = cron.query(
         KeyConditionExpression=Key('incidentId').eq(incident_id)
     )
@@ -93,8 +93,8 @@ def get_priority_by_incident_id(incident_id):
         return items[0].get('priority')
 
 
-def delete_cron_entry_by_incident_id(incident_id):
-    cron = resource.Table(CRON_TABLE)
+def delete_low_prio_incident_by_incident_id(incident_id):
+    cron = resource.Table(LOW_PRIO_INCIDENTS_TABLE)
     response = cron.query(
         KeyConditionExpression=Key('incidentId').eq(incident_id)
     )

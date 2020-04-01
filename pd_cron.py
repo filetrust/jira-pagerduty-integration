@@ -55,7 +55,7 @@ def run():
         if not existed_priority:
             # we keep only non-P1 incidents in the cron table
             if not priority_p1:
-                db.put_cron_incident(incident_id, priority_name)
+                db.put_low_prio_incident(incident_id, priority_name)
                 tracked += 1
                 logger.info('Start tracking {} (#{}) incident.'.format(
                     incident_id, incident.get('incident_number')
@@ -97,7 +97,7 @@ def run():
                     incident_id, incident.get('incident_number'), issue_key
                 ))
             # remove, as far as we don't keep P1 incidents in the cron table
-            db.delete_cron_entry_by_incident_id(incident_id)
+            db.delete_low_prio_incident_by_incident_id(incident_id)
     return {
         'retrieved': retrieved,
         'created': created,
