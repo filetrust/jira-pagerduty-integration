@@ -21,7 +21,10 @@ source env/bin/activate
 
 ## Add python frameworks
 
-```pip instal -r requirements.txt```
+```
+pip instal -r requirements.txt
+pip install -r requirements-dev.txt
+```
 
 ## Install `serverless`:
 
@@ -54,6 +57,13 @@ Copy `.env.example` to `.env` and edit it. Put your email to
 atlassian root URL (e.g. https://username.atlassian.net) to
 `JIRA_SERVER_URL`. Put the key of your project to `JIRA_PROJECT_KEY`
 (you can find the key in the list of the existing projects).
+
+In order to generate fake Jira projects and issues (for testing and
+development purposes), execute the following command:
+
+```
+dotenv run python -m tools.jira-configuration
+```
 
 
 # AWS configuration
