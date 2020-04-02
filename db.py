@@ -4,7 +4,6 @@ import boto3
 from boto3.dynamodb.conditions import Key
 
 INCIDENTS_TABLE = os.environ['INCIDENTS_TABLE']
-LOW_PRIO_INCIDENTS_TABLE = os.environ['LOW_PRIO_INCIDENTS_TABLE']
 IS_OFFLINE = os.environ.get('IS_OFFLINE')
 
 if IS_OFFLINE:
@@ -17,89 +16,56 @@ else:
     resource = boto3.resource('dynamodb')
 
 
-def put_incident_issue_relation(incident_id, issue_key):
-    incidents = resource.Table(INCIDENTS_TABLE)
-    return incidents.put_item(
-        Item={
-            'incidentId': incident_id,
-            'issueKey': issue_key,
+def put_incident(incident_id, incident_fields=None):
+    """
+
+    """
+    if incident_fields is None:
+        incident_fields = {}
+    incidents_table = resource.Table(INCIDENTS_TABLE)
+    incident = get_incident_by_id(incident_id)
+    if incident:
+        item = {
+            **incident,
+            **incident_fields
         }
+    else:
+        item = {
+            **{'incidentId': incident_id},
+            **incident_fields
+        }
+
+    return incidents_table.put_item(
+        Item=item
     )
 
 
-def get_issue_key_by_incident_id(incident_id):
+def get_incident_by_id(incident_id, resolved=False):
     incidents = resource.Table(INCIDENTS_TABLE)
     response = incidents.query(
-        IndexName='incidentId',
         KeyConditionExpression=Key('incidentId').eq(incident_id)
     )
     if response.get('Count', 0) > 0:
-        return response.get('Items')[0].get('issueKey')
+        incident = response.get('Items')[0]
+        incident_resolved = incident.get('resolved', False)
+        if not resolved or not incident_resolved:
+            return incident
+
+
+def get_issue_key_by_incident_id(incident_id):
+    incident = get_incident_by_id(incident_id)
+    if incident:
+        incident.get('issueKey')
 
 
 def get_incident_id_by_issue_key(issue_key):
     incidents = resource.Table(INCIDENTS_TABLE)
-    response = incidents.query(
-        IndexName='issueKey',
+    response = incidents.scan(
         KeyConditionExpression=Key('issueKey').eq(issue_key)
     )
     if response.get('Count', 0) > 0:
         return response.get('Items')[0].get('incidentId')
 
 
-def delete_relation_by_incident_id(incident_id):
-    incidents = resource.Table(INCIDENTS_TABLE)
-    response = incidents.query(
-        IndexName='incidentId',
-        KeyConditionExpression=Key('incidentId').eq(incident_id)
-    )
-    items = response.get('Items')
-    if items:
-        incidents.delete_item(
-            Key=items[0]
-        )
-
-
-def delete_relation_by_issue_key(issue_key):
-    incidents = resource.Table(INCIDENTS_TABLE)
-    response = incidents.query(
-        IndexName='issueKey',
-        KeyConditionExpression=Key('issueKey').eq(issue_key)
-    )
-    items = response.get('Items')
-    if items:
-        incidents.delete_item(
-            Key=items[0]
-        )
-
-
-def put_low_prio_incident(incident_id, priority):
-    cron = resource.Table(LOW_PRIO_INCIDENTS_TABLE)
-    return cron.put_item(
-        Item={
-            'incidentId': incident_id,
-            'priority': priority
-        }
-    )
-
-
-def get_priority_by_incident_id(incident_id):
-    cron = resource.Table(LOW_PRIO_INCIDENTS_TABLE)
-    response = cron.query(
-        KeyConditionExpression=Key('incidentId').eq(incident_id)
-    )
-    items = response.get('Items')
-    if items:
-        return items[0].get('priority')
-
-
-def delete_low_prio_incident_by_incident_id(incident_id):
-    cron = resource.Table(LOW_PRIO_INCIDENTS_TABLE)
-    response = cron.query(
-        KeyConditionExpression=Key('incidentId').eq(incident_id)
-    )
-    items = response.get('Items')
-    if items:
-        cron.delete_item(
-            Key={'incidentId': incident_id}
-        )
+def resolve_incident(incident_id):
+    put_incident(incident_id, {'resolved': True})
