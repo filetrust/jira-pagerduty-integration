@@ -4,6 +4,7 @@ from flask import Flask, jsonify, request
 
 import jirawebhook
 import webhooks
+import pd_cron
 
 app = Flask(__name__)
 logger = logging.getLogger()
@@ -33,6 +34,22 @@ def jira_webhook():
     except Exception as e:
         logger.exception(
             'Error occurred during processing of a Jira webhook')
+        response = {
+            'ok': False,
+            'error': repr(e),
+        }
+    return jsonify(response)
+
+
+# The handler serves to 'manually' run of the cron function. It's useful for
+# development and/or support
+@app.route("/pagerduty-sync", methods=["POST"])
+def cron():
+    try:
+        response = pd_cron.run()
+        response['ok'] = True
+    except Exception as e:
+        logger.exception('Error occurred during processing of a PagerDuty sync')
         response = {
             'ok': False,
             'error': repr(e),

@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 
 from jira.exceptions import JIRAError
 
@@ -33,8 +34,14 @@ def link_issue(outward, inward, link_type):
 def handle_triggered_incident(message):
     global severity_field_id
     incident = message.get('incident', {})
-    if incident.get('priority', {}).get('name') != P1_PRIORITY_NAME:
-        # Skip all incidents except with P1 priority.
+    incident_id = incident['id']
+    incident_priority = incident.get('priority', {}).get('name')
+    if incident_priority != P1_PRIORITY_NAME:
+        # Save the incident in the non-P1 incidents' table, user will
+        # changing the priority after short time after creating. Via polling is
+        # a high probability the incident will not be caught to the non-P1
+        # table.
+        db.put_low_prio_incident(incident_id, incident_priority)
         return
     jira = utils.get_jira()
     if severity_field_id is None:
@@ -43,6 +50,7 @@ def handle_triggered_incident(message):
         severity_field_id = severity_fields[0]['id']
     entries = message.get('log_entries', [])
     severity_field_value = 'SEV-0'
+    issue_key = None
     for entry in entries:
         issue_dict = {
             'project': {'key': os.environ['JIRA_PROJECT_KEY']},
@@ -64,6 +72,9 @@ def handle_triggered_incident(message):
             f'project={PERSON_PROJECT_KEY} and summary~"{assignee}"')
         if persons:
             link_issue(persons[0].key, issue.key, 'has incident manager')
+        issue_key = issue.key
+        db.put_incident_issue_relation(incident_id, issue_key)
+    return issue_key
 
 
 def handle_resolved_incident(message):
