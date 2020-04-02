@@ -76,13 +76,16 @@ def run():
                     number = incident.get('incident_number')
                     summary = incident['title']
                     description = summary
+                    agent = ''
                     endpoint = '/incidents/{}/log_entries'.format(incident_id)
                     for entry in pagerduty.rget(endpoint, params={
                         'include[]': ['channels']
                     }):
-                        description = entry.get('channel', {}).get('details')
-                        if description:
-                            break
+                        if not description:
+                            description = entry.get('channel', {}).get(
+                                'details')
+                        if not agent:
+                            agent = entry.get('agent', {}).get('summary')
                     else:
                         logger.warning(f'Incident {incident_id} (#{number})'
                                        f' field description is empty')
@@ -94,6 +97,9 @@ def run():
                                 'summary': summary,
                                 'details': description
                             },
+                        'agent': {
+                            'summary': agent
+                        },
                         }]
                     })
                     logger.info(f'Incident {incident_id} (#{number}): '
