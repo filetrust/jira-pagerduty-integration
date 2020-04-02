@@ -11,6 +11,7 @@ INCIDENTS_ENDPOINT = 'incidents'
 P1_PRIORITY_NAME = 'P1'
 PAGERDUTY_CRON_SYNC_DAYS = os.environ['PAGERDUTY_CRON_SYNC_DAYS']
 STATUS_RESOLVED = 'resolved'
+RESOLVED_FIELD_NAME = 'resolved'
 ISSUE_KEY_FIELD = 'issue_key'
 
 if len(logging.getLogger().handlers) > 0:
@@ -33,10 +34,11 @@ def run():
     """
     now = datetime.today()
     since = now.replace(minute=0, hour=0, second=0, microsecond=0) - \
-            timedelta(days=int(PAGERDUTY_CRON_SYNC_DAYS))
+        timedelta(days=int(PAGERDUTY_CRON_SYNC_DAYS))
     created = 0
     tracked = 0
     retrieved = 0
+    changed = 0
 
     pagerduty = utils.get_pagerduty()
     for incident in pagerduty.iter_all(INCIDENTS_ENDPOINT, params={
@@ -64,10 +66,11 @@ def run():
             logger.info('Start tracking {} (#{}) incident.'.format(
                 incident_id, incident.get('incident_number')
             ))
-        elif not db_incident.get('resolved'):
+        elif not db_incident.get(RESOLVED_FIELD_NAME):
             db_priority = db_incident.get('priority')
-            db_jira = db_incident.get(ISSUE_KEY_FIELD)
-            if high_priority and db_priority != priority_name and not db_jira:
+            db_issue_key = db_incident.get(ISSUE_KEY_FIELD)
+            if high_priority and db_priority != priority_name and not \
+                    db_issue_key:
                 issue_key = incident.get(ISSUE_KEY_FIELD)
                 if not issue_key:
                     number = incident.get('incident_number')
@@ -82,7 +85,7 @@ def run():
                             break
                     else:
                         logger.warning(f'Incident {incident_id} (#{number})'
-                                     f' field description is empty')
+                                       f' field description is empty')
                     created += 1
                     issue_key = webhooks.handle_triggered_incident(message={
                         'incident': incident,
@@ -94,10 +97,15 @@ def run():
                         }]
                     })
                     logger.info(f'Incident {incident_id} (#{number}): '
-                                f'JIRA issue {issue_key} created! ')
+                                f'JIRA issue {issue_key} created!')
+            elif db_priority != priority_name:
+                # just update priority
+                changed += 1
+                db.put_incident(incident_id, {'priority': priority_name})
 
     return {
         'retrieved': retrieved,
         'created': created,
+        'changed': changed,
         'tracked': tracked
     }

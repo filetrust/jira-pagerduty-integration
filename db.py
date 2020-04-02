@@ -1,10 +1,17 @@
+import datetime
+from datetime import datetime, timedelta
 import os
 
 import boto3
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Attr, Key
 
 INCIDENTS_TABLE = os.environ['INCIDENTS_TABLE']
 IS_OFFLINE = os.environ.get('IS_OFFLINE')
+
+CREATED_FIELD_NAME = 'created'
+UPDATED_FIELD_NAME = 'updated'
+RESOLVED_FIELD_NAME = 'resolved'
+
 
 if IS_OFFLINE:
     resource = boto3.resource(
@@ -14,6 +21,11 @@ if IS_OFFLINE:
     )
 else:
     resource = boto3.resource('dynamodb')
+
+
+def get_now():
+    now = datetime.today()
+    return str(now)
 
 
 def put_incident(incident_id, incident_fields=None):
@@ -27,17 +39,25 @@ def put_incident(incident_id, incident_fields=None):
     if incident:
         item = {
             **incident,
-            **incident_fields
+            **incident_fields,
+            **{'updated': get_now()}
         }
     else:
         item = {
-            **{'incidentId': incident_id},
+            **{
+                'incidentId': incident_id,
+                'created': get_now()
+            },
             **incident_fields
         }
 
     return incidents_table.put_item(
         Item=item
     )
+
+
+def resolve_incident(incident_id):
+    put_incident(incident_id, {RESOLVED_FIELD_NAME: get_now()})
 
 
 def get_incident_by_id(incident_id, resolved=False):
@@ -47,7 +67,7 @@ def get_incident_by_id(incident_id, resolved=False):
     )
     if response.get('Count', 0) > 0:
         incident = response.get('Items')[0]
-        incident_resolved = incident.get('resolved', False)
+        incident_resolved = incident.get(RESOLVED_FIELD_NAME, False)
         if not resolved or not incident_resolved:
             return incident
 
@@ -61,11 +81,9 @@ def get_issue_key_by_incident_id(incident_id):
 def get_incident_id_by_issue_key(issue_key):
     incidents = resource.Table(INCIDENTS_TABLE)
     response = incidents.scan(
-        KeyConditionExpression=Key('issueKey').eq(issue_key)
+        FilterExpression=Attr('issueKey').eq(issue_key)
     )
     if response.get('Count', 0) > 0:
         return response.get('Items')[0].get('incidentId')
 
 
-def resolve_incident(incident_id):
-    put_incident(incident_id, {'resolved': True})

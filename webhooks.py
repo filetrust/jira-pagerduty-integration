@@ -50,7 +50,6 @@ def handle_resolved_incident(message):
     incident = message.get('incident')
     incident_id = incident['id']
     issue_key = db.get_issue_key_by_incident_id(incident_id)
-    print(f'issue_key: {issue_key}')
     if issue_key:
         jira = utils.get_jira()
         issue = jira.issue(issue_key)

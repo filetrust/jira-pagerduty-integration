@@ -2,6 +2,7 @@ import db
 import utils
 
 INCIDENT_ENDPOINT = 'incidents'
+STATUS_RESOLVED = 'resolved'
 
 
 def jira(event):
@@ -26,7 +27,7 @@ def jira(event):
             pagerduty = utils.get_pagerduty()
             try:
                 pagerduty.rput(INCIDENT_ENDPOINT, json=[{
-                    'id': incident_id, 'type': 'incident', 'status': 'resolved'
+                    'id': incident_id, 'type': 'incident', 'status': STATUS_RESOLVED
                 }])
                 db.resolve_incident(incident_id)
             except Exception as e:
