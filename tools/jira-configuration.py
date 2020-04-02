@@ -12,6 +12,9 @@ import utils
 
 
 QUESTION_ISSUE_TYPE_NAME = 'Question'
+INCIDENT_MANAGER_ISSUE_TYPE_NAME = 'Incident Manager'
+PERSON_PROJECT_KEY = os.environ['PERSON_PROJECT_KEY']
+PAGERDUTY_USER_NAME = os.environ['PAGERDUTY_USER_NAME']
 FORMAT = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
 JIRA_SERVER_URL = os.environ['JIRA_SERVER_URL']
 JIRA_API_URL =  f'{JIRA_SERVER_URL}/rest/api/3'
@@ -108,12 +111,11 @@ def create_issue_link_type(name, outward, inward):
 
 
 if __name__ == "__main__":
-    person_project_key = 'PERSON'
-    project = create_project(person_project_key, 'Persons')
+    project = create_project(PERSON_PROJECT_KEY, 'Persons')
     if project:
-        create_issue(person_project_key, fake.name())
-        create_issue(person_project_key, fake.name())
-        create_issue(person_project_key, fake.name())
+        create_issue(PERSON_PROJECT_KEY, fake.name())
+        create_issue(PERSON_PROJECT_KEY, fake.name())
+        create_issue(PERSON_PROJECT_KEY, fake.name())
 
     incident_project_key = 'INCIDENT'
     project = create_project(incident_project_key, 'Incidents')
@@ -140,3 +142,32 @@ if __name__ == "__main__":
     else:
         create_issue_link_type(
             QUESTION_ISSUE_TYPE_NAME, 'has question', 'is question of')
+
+    for issue_link_type in jira.issue_link_types():
+        if issue_link_type.name == INCIDENT_MANAGER_ISSUE_TYPE_NAME:
+            msg = (
+                f'Issue link type "{INCIDENT_MANAGER_ISSUE_TYPE_NAME}" '
+                f'already exists. Skipping...'
+            )
+            logger.info(msg)
+            break
+    else:
+        create_issue_link_type(
+            INCIDENT_MANAGER_ISSUE_TYPE_NAME,
+            'has incident manager',
+            'is incident manager of'
+        )
+
+    persons = jira.search_issues(
+        f'project={PERSON_PROJECT_KEY} and summary~"{PAGERDUTY_USER_NAME}"')
+    if persons:
+        logger.info(
+            f'Person "{PAGERDUTY_USER_NAME}" already exists. Skipping...')
+    else:
+        issue_dict = {
+            'project': {'key': PERSON_PROJECT_KEY},
+            'summary': PAGERDUTY_USER_NAME,
+            'issuetype': {'name': 'Story'},
+        }
+        jira.create_issue(fields=issue_dict)
+        logger.info(f'Person "{PAGERDUTY_USER_NAME}" successfully created')
