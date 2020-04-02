@@ -6,6 +6,7 @@ from jira.exceptions import JIRAError
 import db
 import utils
 
+
 P1_PRIORITY_NAME = 'P1'
 PERSON_PROJECT_KEY = os.environ['PERSON_PROJECT_KEY']
 severity_field_id = None
@@ -55,10 +56,15 @@ def handle_triggered_incident(message):
             issue_dict[severity_field_id] = {'value': severity_field_value}
         issue = jira.create_issue(fields=issue_dict)
         db.put_incident_issue_relation(incident['id'], issue.key)
-        questions = os.environ.get('JIRA_ISSUE_QUESTIONS', '')
-        questions = [q for q in questions.split(',') if q]
-        for q in questions:
-            link_issue(q, issue.key, 'has question')
+        for q in utils.get_questions():
+            question_dict = {
+                'project': {'key': os.environ['QUESTION_PROJECT_KEY']},
+                'summary': q['summary'],
+                'description': q['description'],
+                'issuetype': {'name': 'Bug'},
+            }
+            question = jira.create_issue(fields=question_dict)
+            link_issue(question, issue.key, 'has question')
         assignee = entries[0]['agent']['summary']
         persons = jira.search_issues(
             f'project={PERSON_PROJECT_KEY} and summary~"{assignee}"')
