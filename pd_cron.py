@@ -32,7 +32,7 @@ def run():
     """
     now = datetime.today()
     since = now.replace(minute=0, hour=0, second=0, microsecond=0) - \
-        timedelta(days=int(PAGERDUTY_CRON_SYNC_DAYS))
+            timedelta(days=int(PAGERDUTY_CRON_SYNC_DAYS))
     created = 0
     tracked = 0
     retrieved = 0
@@ -68,13 +68,15 @@ def run():
             if issue_key is None:
                 summary = incident['title']
                 description = summary
+                agent = ''
                 endpoint = '/incidents/{}/log_entries'.format(incident_id)
                 for entry in pagerduty.rget(endpoint, params={
                     'include[]': ['channels']
                 }):
-                    description = entry.get('channel', {}).get('details')
-                    if description:
-                        break
+                    if not description:
+                        description = entry.get('channel', {}).get('details')
+                    if not agent:
+                        agent = entry.get('agent', {}).get('summary')
                 else:
                     logger.error(
                         'For Incident {} (#{}) field description is not '
@@ -89,6 +91,9 @@ def run():
                             'summary': summary,
                             'details': description
                         },
+                        'agent': {
+                            'summary': agent
+                        }
                     }]
                 })
                 logger.info('For Incident {} (#{}) issue {} created! '.format(

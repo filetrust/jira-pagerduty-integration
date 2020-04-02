@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 
 from jira.exceptions import JIRAError
 
