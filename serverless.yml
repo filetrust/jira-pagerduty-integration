@@ -18,7 +18,6 @@ provider:
   cronInterval: ${env:PAGERDUTY_CRON_INTERVAL}
   environment:
     INCIDENTS_TABLE: ${self:custom.incidentsTableName}
-    LOW_PRIO_INCIDENTS_TABLE: ${self:custom.cronTableName}
 
 functions:
   app:
@@ -39,7 +38,6 @@ plugins:
 
 custom:
   incidentsTableName: 'incidents-${self:provider.stage}'
-  cronTableName: 'low-prio-incidents-${self:provider.stage}'
   wsgi:
     app: app.app
     packRequirements: false
@@ -61,19 +59,6 @@ package:
 
 resources:
   Resources:
-    LowPrioIncidentsTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:custom.cronTableName}
-        AttributeDefinitions:
-          - AttributeName: incidentId
-            AttributeType: S
-        KeySchema:
-          - AttributeName: incidentId
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
     IncidentsTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -81,32 +66,9 @@ resources:
         AttributeDefinitions:
           - AttributeName: incidentId
             AttributeType: S
-          - AttributeName: issueKey
-            AttributeType: S
         KeySchema:
           - AttributeName: incidentId
             KeyType: HASH
-          - AttributeName: issueKey
-            KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-          - IndexName: issueKey
-            Projection:
-              ProjectionType: ALL
-            KeySchema:
-              - AttributeName: issueKey
-                KeyType: HASH
-            ProvisionedThroughput:
-              ReadCapacityUnits: 5
-              WriteCapacityUnits: 5
-          - IndexName: incidentId
-            Projection:
-              ProjectionType: ALL
-            KeySchema:
-              - AttributeName: incidentId
-                KeyType: HASH
-            ProvisionedThroughput:
-              ReadCapacityUnits: 5
-              WriteCapacityUnits: 5

@@ -6,11 +6,15 @@ from jira.exceptions import JIRAError
 
 import db
 import utils
+from jira.exceptions import JIRAError
 
 P1_PRIORITY_NAME = 'P1'
 PERSON_PROJECT_KEY = os.environ['PERSON_PROJECT_KEY']
 severity_field_id = None
 logger = logging.getLogger()
+
+ISSUE_KEY_FIELD_NAME = 'issueKey'
+INCIDENT_NUMBER_FIELD_NAME = 'incident_number'
 
 
 def link_issue(outward, inward, link_type):
@@ -35,66 +39,72 @@ def handle_triggered_incident(message):
     global severity_field_id
     incident = message.get('incident', {})
     incident_id = incident['id']
-    incident_priority = incident.get('priority', {}).get('name')
-    if incident_priority != P1_PRIORITY_NAME:
-        # Save the incident in the non-P1 incidents' table, user will
-        # changing the priority after short time after creating. Via polling is
-        # a high probability the incident will not be caught to the non-P1
-        # table.
-        db.put_low_prio_incident(incident_id, incident_priority)
-        return
-    jira = utils.get_jira()
-    if severity_field_id is None:
-        fields = jira.fields()
-        severity_fields = [f for f in fields if f['name'] == 'Severity']
-        severity_field_id = severity_fields[0]['id']
-    entries = message.get('log_entries', [])
-    severity_field_value = 'SEV-0'
     issue_key = None
-    for entry in entries:
-        issue_dict = {
-            'project': {'key': os.environ['JIRA_PROJECT_KEY']},
-            'summary': entry['channel']['summary'],
-            'description': entry['channel']['details'],
-            'issuetype': {'name': 'Bug'},
-            'priority': {'name': 'Highest'},
-        }
-        if severity_field_id:
-            issue_dict[severity_field_id] = {'value': severity_field_value}
-        issue = jira.create_issue(fields=issue_dict)
-        db.put_incident_issue_relation(incident['id'], issue.key)
-        questions = os.environ.get('JIRA_ISSUE_QUESTIONS', '')
-        questions = [q for q in questions.split(',') if q]
-        for q in questions:
-            link_issue(q, issue.key, 'has question')
-        assignee = entries[0]['agent']['summary']
-        persons = jira.search_issues(
-            f'project={PERSON_PROJECT_KEY} and summary~"{assignee}"')
-        if persons:
-            link_issue(persons[0].key, issue.key, 'has incident manager')
-        issue_key = issue.key
-        db.put_incident_issue_relation(incident_id, issue_key)
+    priority = incident.get('priority')
+    high_priority = False
+    incident_fields = {}
+    if priority:
+        priority_name = priority.get('name')
+        if priority_name:
+            incident_fields['priority'] = priority_name
+            high_priority = priority_name == P1_PRIORITY_NAME
+    if high_priority:
+        jira = utils.get_jira()
+        if severity_field_id is None:
+            fields = jira.fields()
+            severity_fields = [f for f in fields if f['name'] == 'Severity']
+            severity_field_id = severity_fields[0]['id']
+        entries = message.get('log_entries', [])
+        severity_field_value = 'SEV-0'
+        for entry in entries:
+            issue_dict = {
+                'project': {'key': os.environ['JIRA_PROJECT_KEY']},
+                'summary': entry['channel']['summary'],
+                'description': entry['channel']['details'],
+                'issuetype': {'name': 'Bug'},
+                'priority': {'name': 'Highest'},
+            }
+            if severity_field_id:
+                issue_dict[severity_field_id] = {'value': severity_field_value}
+            issue = jira.create_issue(fields=issue_dict)
+            # db.put_incident_issue_relation(incident['id'], issue.key)
+            questions = os.environ.get('JIRA_ISSUE_QUESTIONS', '')
+            questions = [q for q in questions.split(',') if q]
+            for q in questions:
+                link_issue(q, issue.key, 'has question')
+            assignee = entries[0]['agent']['summary']
+            persons = jira.search_issues(
+                f'project={PERSON_PROJECT_KEY} and summary~"{assignee}"')
+            if persons:
+                link_issue(persons[0].key, issue.key, 'has incident manager')
+            issue_key = issue.key
+            incident_fields[ISSUE_KEY_FIELD_NAME] = issue_key
+            incident_fields[INCIDENT_NUMBER_FIELD_NAME] = incident.get(
+                INCIDENT_NUMBER_FIELD_NAME)
+
+    db.put_incident(incident_id, incident_fields)
     return issue_key
 
 
 def handle_resolved_incident(message):
     incident = message.get('incident')
-    issue_key = db.get_issue_key_by_incident_id(incident['id'])
-    if issue_key is not None:
+    incident_id = incident['id']
+    issue_key = db.get_issue_key_by_incident_id(incident_id)
+    if issue_key:
         jira = utils.get_jira()
         issue = jira.issue(issue_key)
         done_transition_ids = [
             t['id'] for t in jira.transitions(issue) if t['name'] == 'Done']
-        db.delete_relation_by_issue_key(issue_key)
         if done_transition_ids:
             try:
                 jira.transition_issue(issue, done_transition_ids[0])
-            except Exception as e:
-                # Restore relation if something goes wrong
-                is_exists = db.get_issue_key_by_incident_id(incident['id'])
-                if is_exists is None:
-                    db.put_incident_issue_relation(incident['id'], issue_key)
-                raise e
+                db.resolve_incident(incident_id)
+            except JIRAError as e:
+                # logger.error
+                pass
+        else:
+            # logger.warn('JIRA repo has no Done state !?)'
+            pass
 
 
 def pagerduty(event):
