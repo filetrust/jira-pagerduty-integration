@@ -7,6 +7,7 @@ import db
 import utils
 
 P1_PRIORITY_NAME = 'P1'
+PERSON_PROJECT_KEY = os.environ['PERSON_PROJECT_KEY']
 severity_field_id = None
 logger = logging.getLogger()
 
@@ -57,6 +58,11 @@ def handle_triggered_incident(message):
         questions = [q for q in questions.split(',') if q]
         for q in questions:
             link_issue(q, issue.key, 'has question')
+        assignee = entries[0]['agent']['summary']
+        persons = jira.search_issues(
+            f'project={PERSON_PROJECT_KEY} and summary~"{assignee}"')
+        if persons:
+            link_issue(persons[0].key, issue.key, 'has incident manager')
 
 
 def handle_resolved_incident(message):
