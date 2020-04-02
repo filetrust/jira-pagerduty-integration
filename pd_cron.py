@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta
 import datetime
+from datetime import datetime, timedelta
 import logging
 import os
 
@@ -68,15 +68,13 @@ def run():
             if issue_key is None:
                 summary = incident['title']
                 description = summary
-                log_entries_ep = '/incidents/{}/log_entries'.format(incident_id)
-                for entry in pagerduty.rget(log_entries_ep, params={
+                endpoint = '/incidents/{}/log_entries'.format(incident_id)
+                for entry in pagerduty.rget(endpoint, params={
                     'include[]': ['channels']
                 }):
-                    channel = entry['channel']
-                    if channel:
-                        description = channel['details']
-                        if description:
-                            break
+                    description = entry.get('channel', {}).get('details')
+                    if description:
+                        break
                 else:
                     logger.error(
                         'For Incident {} (#{}) field description is not '
