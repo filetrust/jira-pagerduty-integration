@@ -9,10 +9,12 @@ import utils
 from jira.exceptions import JIRAError
 
 P1_PRIORITY_NAME = 'P1'
-ISSUE_KEY_NAME = 'issueKey'
 PERSON_PROJECT_KEY = os.environ['PERSON_PROJECT_KEY']
 severity_field_id = None
 logger = logging.getLogger()
+
+ISSUE_KEY_FIELD_NAME = 'issueKey'
+INCIDENT_NUMBER_FIELD_NAME = 'incident_number'
 
 
 def link_issue(outward, inward, link_type):
@@ -76,7 +78,10 @@ def handle_triggered_incident(message):
             if persons:
                 link_issue(persons[0].key, issue.key, 'has incident manager')
             issue_key = issue.key
-            incident_fields[ISSUE_KEY_NAME] = issue_key
+            incident_fields[ISSUE_KEY_FIELD_NAME] = issue_key
+            incident_fields[INCIDENT_NUMBER_FIELD_NAME] = incident.get(
+                INCIDENT_NUMBER_FIELD_NAME)
+
     db.put_incident(incident_id, incident_fields)
     return issue_key
 

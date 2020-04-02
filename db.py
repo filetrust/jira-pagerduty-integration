@@ -1,5 +1,5 @@
 import datetime
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
 
 import boto3
@@ -11,7 +11,6 @@ IS_OFFLINE = os.environ.get('IS_OFFLINE')
 CREATED_FIELD_NAME = 'created'
 UPDATED_FIELD_NAME = 'updated'
 RESOLVED_FIELD_NAME = 'resolved'
-
 
 if IS_OFFLINE:
     resource = boto3.resource(
@@ -75,7 +74,7 @@ def get_incident_by_id(incident_id, resolved=False):
 def get_issue_key_by_incident_id(incident_id):
     incident = get_incident_by_id(incident_id)
     if incident:
-        incident.get('issueKey')
+        return incident.get('issueKey')
 
 
 def get_incident_id_by_issue_key(issue_key):
@@ -85,5 +84,3 @@ def get_incident_id_by_issue_key(issue_key):
     )
     if response.get('Count', 0) > 0:
         return response.get('Items')[0].get('incidentId')
-
-

@@ -11,8 +11,10 @@ INCIDENTS_ENDPOINT = 'incidents'
 P1_PRIORITY_NAME = 'P1'
 PAGERDUTY_CRON_SYNC_DAYS = os.environ['PAGERDUTY_CRON_SYNC_DAYS']
 STATUS_RESOLVED = 'resolved'
+
 RESOLVED_FIELD_NAME = 'resolved'
 ISSUE_KEY_FIELD = 'issue_key'
+INCIDENT_NUMBER_FIELD_NAME = 'incident_number'
 
 if len(logging.getLogger().handlers) > 0:
     # The Lambda environment pre-configures a handler logging to stderr. If a
@@ -60,11 +62,12 @@ def run():
                 high_priority = priority_name == P1_PRIORITY_NAME
         db_incident = db.get_incident_by_id(incident_id, resolved=True)
         if not db_incident:
-            fields['incident_number'] = incident.get('incident_number')
+            fields[INCIDENT_NUMBER_FIELD_NAME] = incident.get(
+                INCIDENT_NUMBER_FIELD_NAME)
             db.put_incident(incident_id, fields)
             tracked += 1
             logger.info('Start tracking {} (#{}) incident.'.format(
-                incident_id, incident.get('incident_number')
+                incident_id, incident.get(INCIDENT_NUMBER_FIELD_NAME)
             ))
         elif not db_incident.get(RESOLVED_FIELD_NAME):
             db_priority = db_incident.get('priority')
@@ -73,7 +76,7 @@ def run():
                     db_issue_key:
                 issue_key = incident.get(ISSUE_KEY_FIELD)
                 if not issue_key:
-                    number = incident.get('incident_number')
+                    number = incident.get(INCIDENT_NUMBER_FIELD_NAME)
                     summary = incident['title']
                     description = summary
                     agent = ''
@@ -97,9 +100,9 @@ def run():
                                 'summary': summary,
                                 'details': description
                             },
-                        'agent': {
-                            'summary': agent
-                        },
+                            'agent': {
+                                'summary': agent
+                            },
                         }]
                     })
                     logger.info(f'Incident {incident_id} (#{number}): '
