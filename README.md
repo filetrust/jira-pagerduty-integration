@@ -21,7 +21,10 @@ source env/bin/activate
 
 ## Add python frameworks
 
-```pip instal -r requirements.txt```
+```
+pip instal -r requirements.txt
+pip install -r requirements-dev.txt
+```
 
 ## Install `serverless`:
 
@@ -54,6 +57,23 @@ Copy `.env.example` to `.env` and edit it. Put your email to
 atlassian root URL (e.g. https://username.atlassian.net) to
 `JIRA_SERVER_URL`. Put the key of your project to `JIRA_PROJECT_KEY`
 (you can find the key in the list of the existing projects).
+
+Put the full name of PagerDuty user into `PAGERDUTY_USER_NAME`
+variable (this is for the dev and test environments only, i.e. no
+needs to have the variable configured on production
+environment). During execution of `tools.jira-configuration` (see
+below) the full name is used to create a Jira issue in `PERSON`
+project. When a Jira issue is created by the integration, a Jira issue
+(in `PERSON` project) is searched by PagerDuty assignee. If the issue
+is found then it is linked to the newly created issue using `Incident
+Manager` link type.
+
+In order to generate fake Jira projects and issues (for testing and
+development purposes), execute the following command:
+
+```
+dotenv run python -m tools.jira-configuration
+```
 
 
 # AWS configuration

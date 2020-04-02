@@ -3,6 +3,7 @@ service: pjsync
 provider:
   name: aws
   runtime: python3.7
+  stage: ${env:STAGE}
   iamRoleStatements:
     - Effect: Allow
       Action:
