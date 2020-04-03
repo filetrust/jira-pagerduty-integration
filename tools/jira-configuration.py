@@ -14,6 +14,7 @@ import utils
 QUESTION_ISSUE_TYPE_NAME = 'Question'
 INCIDENT_MANAGER_ISSUE_TYPE_NAME = 'Incident Manager'
 PERSON_PROJECT_KEY = os.environ['PERSON_PROJECT_KEY']
+QUESTION_PROJECT_KEY = os.environ['QUESTION_PROJECT_KEY']
 PAGERDUTY_USER_NAME = os.environ['PAGERDUTY_USER_NAME']
 FORMAT = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
 JIRA_SERVER_URL = os.environ['JIRA_SERVER_URL']
@@ -124,12 +125,11 @@ if __name__ == "__main__":
         create_issue(incident_project_key, fake.sentence())
         create_issue(incident_project_key, fake.sentence())
 
-    question_project_key = 'QUESTION'
-    project = create_project(question_project_key, 'Questions')
+    project = create_project(QUESTION_PROJECT_KEY, 'Questions')
     if project:
-        create_issue(question_project_key, fake.sentence())
-        create_issue(question_project_key, fake.sentence())
-        create_issue(question_project_key, fake.sentence())
+        create_issue(QUESTION_PROJECT_KEY, fake.sentence())
+        create_issue(QUESTION_PROJECT_KEY, fake.sentence())
+        create_issue(QUESTION_PROJECT_KEY, fake.sentence())
 
     for issue_link_type in jira.issue_link_types():
         if issue_link_type.name == QUESTION_ISSUE_TYPE_NAME:
