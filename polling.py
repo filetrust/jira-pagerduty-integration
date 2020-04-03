@@ -16,8 +16,10 @@ TIMELINE_PROJECT_KEY = os.environ['TIMELINE_PROJECT_KEY']
 def log_entries(event, context):
     pagerduty = utils.get_pagerduty()
     jira = utils.get_jira()
+    poll_past_hours = int(os.environ.get('LOG_ENTRIES_POLL_PAST_HOURS'))
     params = {
-        'since': datetime.datetime.now() - datetime.timedelta(hours=6)
+        'since': datetime.datetime.now() - datetime.timedelta(
+            hours=poll_past_hours)
     }
     log_entries = list(pagerduty.iter_all(LOG_ENTRIES_ENDPOINT, params=params))
     logger.debug('{} log entries found'.format(len(log_entries)))
