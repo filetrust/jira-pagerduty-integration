@@ -10,6 +10,7 @@ import utils
 
 LOG_ENTRIES_ENDPOINT = '/log_entries'
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 TIMELINE_PROJECT_KEY = os.environ['TIMELINE_PROJECT_KEY']
 
 
@@ -22,27 +23,28 @@ def log_entries(event, context):
             hours=poll_past_hours)
     }
     log_entries = list(pagerduty.iter_all(LOG_ENTRIES_ENDPOINT, params=params))
-    logger.debug('{} log entries found'.format(len(log_entries)))
+    logger.info('{} log entries found'.format(len(log_entries)))
     for log_entry in log_entries:
         if db.get_log_entry_by_id(log_entry['id']):
             msg = '[{}] Existing log entry found. Skipping...'
             msg = msg.format(log_entry['id'])
-            logger.debug(msg)
+            logger.info(msg)
             continue
         if log_entry['type'] == 'status_update_log_entry':
-            logger.debug(
+            logger.info(
                 '[{}] New status update found'.format(log_entry['id']))
             issue_key = db.get_issue_key_by_incident_id(
                 log_entry['incident']['id'])
             if issue_key:
-                logger.debug(
+                logger.info(
                     '[{}] Related issue found: {}'.format(
                         log_entry['id'], issue_key))
                 try:
                     incident_issue = jira.issue(issue_key)
                 except JIRAError as error:
                     logger.exception(
-                        'Error occurred while retrieving Jira issue')
+                        '[{}] Error occurred while retrieving Jira issue'.format(
+                            log_entry['id']))
                 else:
                     issue_dict = {
                         'project': {'key': os.environ['TIMELINE_PROJECT_KEY']},
@@ -50,10 +52,13 @@ def log_entries(event, context):
                         'issuetype': {'name': 'Bug'},
                     }
                     timeline_issue = jira.create_issue(fields=issue_dict)
+                    logger.info(
+                        'Timeline issue "{}" successfully created'.format(
+                            timeline_issue.key))
                     utils.link_issue(
                         timeline_issue.key, issue_key, 'has timeline')
             else:
-                logger.debug(
+                logger.info(
                     '[{}] Issue key not found'.format(log_entry['id']))
         db.put_log_entry(log_entry['id'])
     return {
