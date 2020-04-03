@@ -40,7 +40,7 @@ def handle_triggered_incident(message):
         severity_field_value = 'SEV-0'
         for entry in entries:
             issue_dict = {
-                'project': {'key': os.environ['JIRA_PROJECT_KEY']},
+                'project': {'key': os.environ['INCIDENT_PROJECT_KEY']},
                 'summary': entry['channel']['summary'],
                 'description': entry['channel']['details'],
                 'issuetype': {'name': 'Bug'},

@@ -14,6 +14,7 @@ import utils
 QUESTION_ISSUE_TYPE_NAME = 'Question'
 INCIDENT_MANAGER_ISSUE_TYPE_NAME = 'Incident Manager'
 TIMELINE_ISSUE_TYPE_NAME = 'Timeline'
+INCIDENT_PROJECT_KEY = os.environ['INCIDENT_PROJECT_KEY']
 PERSON_PROJECT_KEY = os.environ['PERSON_PROJECT_KEY']
 TIMELINE_PROJECT_KEY = os.environ['TIMELINE_PROJECT_KEY']
 QUESTION_PROJECT_KEY = os.environ['QUESTION_PROJECT_KEY']
@@ -120,12 +121,11 @@ if __name__ == "__main__":
         create_issue(PERSON_PROJECT_KEY, fake.name())
         create_issue(PERSON_PROJECT_KEY, fake.name())
 
-    incident_project_key = 'INCIDENT'
-    project = create_project(incident_project_key, 'Incidents')
+    project = create_project(INCIDENT_PROJECT_KEY, 'Incidents')
     if project:
-        create_issue(incident_project_key, fake.sentence())
-        create_issue(incident_project_key, fake.sentence())
-        create_issue(incident_project_key, fake.sentence())
+        create_issue(INCIDENT_PROJECT_KEY, fake.sentence())
+        create_issue(INCIDENT_PROJECT_KEY, fake.sentence())
+        create_issue(INCIDENT_PROJECT_KEY, fake.sentence())
 
     project = create_project(QUESTION_PROJECT_KEY, 'Questions')
     if project:
