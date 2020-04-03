@@ -30,6 +30,8 @@ def handle_triggered_incident(message):
         if priority_name:
             incident_fields['priority'] = priority_name
             high_priority = priority_name == P1_PRIORITY_NAME
+    incident_fields[INCIDENT_NUMBER_FIELD_NAME] = incident.get(
+        INCIDENT_NUMBER_FIELD_NAME)
     if high_priority:
         jira = utils.get_jira()
         if severity_field_id is None:
@@ -49,7 +51,10 @@ def handle_triggered_incident(message):
             if severity_field_id:
                 issue_dict[severity_field_id] = {'value': severity_field_value}
             issue = jira.create_issue(fields=issue_dict)
-            # db.put_incident_issue_relation(incident['id'], issue.key)
+            issue_key = issue.key
+            incident_fields[ISSUE_KEY_FIELD_NAME] = issue_key
+
+            db.put_incident(incident_id, incident_fields)
             for q in utils.get_questions():
                 question_dict = {
                     'project': {'key': os.environ['QUESTION_PROJECT_KEY']},
@@ -70,11 +75,9 @@ def handle_triggered_incident(message):
                 utils.link_issue(
                     persons[0].key, issue.key, 'has incident manager')
             issue_key = issue.key
-            incident_fields[ISSUE_KEY_FIELD_NAME] = issue_key
-            incident_fields[INCIDENT_NUMBER_FIELD_NAME] = incident.get(
-                INCIDENT_NUMBER_FIELD_NAME)
+    else:
+        db.put_incident(incident_id, incident_fields)
 
-    db.put_incident(incident_id, incident_fields)
     return issue_key
 
 
