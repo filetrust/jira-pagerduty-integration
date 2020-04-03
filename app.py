@@ -46,7 +46,7 @@ def jira_webhook():
 @app.route("/pagerduty-sync", methods=["POST"])
 def cron():
     try:
-        response = pd_cron.run()
+        response = pd_cron.run(None, None)
         response['ok'] = True
     except Exception as e:
         logger.exception('Error occurred during processing of a PagerDuty sync')

@@ -27,7 +27,7 @@ else:
 logger = logging.getLogger()
 
 
-def run():
+def run(event, context):
     """
     Detect and synchronize PagerDuty incidents, if user changes Priority field
     from non P-1 to P-1 value. In this case application creates a
