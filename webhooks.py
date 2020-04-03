@@ -72,6 +72,10 @@ def handle_triggered_incident(message):
             questions = [q for q in questions.split(',') if q]
             for q in questions:
                 link_issue(q, issue.key, 'has question')
+            stakeholders = os.environ.get('JIRA_ISSUE_STAKEHOLDERS', '')
+            stakeholders = [q for q in stakeholders.split(',') if q]
+            for s in stakeholders:
+                link_issue(s, issue.key, 'has stakeholder')
             assignee = entries[0]['agent']['summary']
             persons = jira.search_issues(
                 f'project={PERSON_PROJECT_KEY} and summary~"{assignee}"')
