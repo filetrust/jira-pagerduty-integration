@@ -17,24 +17,6 @@ ISSUE_KEY_FIELD_NAME = 'issueKey'
 INCIDENT_NUMBER_FIELD_NAME = 'incident_number'
 
 
-def link_issue(outward, inward, link_type):
-    """
-    Create a link between two issues. `inward` is an issue to link
-    from, `outward` is an issue to link to and `link_type` is the type
-    of link to create. `inward` and `outward` are the keys of the
-    issues that are being linked.
-    """
-    jira = utils.get_jira()
-    try:
-        jira.create_issue_link(link_type, inward, outward)
-        logger.info(f'Issue link type "{link_type}" successfully created')
-    except JIRAError as error:
-        logger.exception(
-            f'Error occurred during creating a link between "{outward}" '
-            f'and "{inward}" issues using the type of link "{link_type}"'
-        )
-
-
 def handle_triggered_incident(message):
     global severity_field_id
     incident = message.get('incident', {})
@@ -71,12 +53,13 @@ def handle_triggered_incident(message):
             questions = os.environ.get('JIRA_ISSUE_QUESTIONS', '')
             questions = [q for q in questions.split(',') if q]
             for q in questions:
-                link_issue(q, issue.key, 'has question')
+                utils.link_issue(q, issue.key, 'has question')
             assignee = entries[0]['agent']['summary']
             persons = jira.search_issues(
                 f'project={PERSON_PROJECT_KEY} and summary~"{assignee}"')
             if persons:
-                link_issue(persons[0].key, issue.key, 'has incident manager')
+                utils.link_issue(
+                    persons[0].key, issue.key, 'has incident manager')
             issue_key = issue.key
             incident_fields[ISSUE_KEY_FIELD_NAME] = issue_key
             incident_fields[INCIDENT_NUMBER_FIELD_NAME] = incident.get(

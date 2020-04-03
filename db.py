@@ -6,6 +6,7 @@ import boto3
 from boto3.dynamodb.conditions import Attr, Key
 
 INCIDENTS_TABLE = os.environ['INCIDENTS_TABLE']
+LOG_ENTRIES_TABLE = os.environ['LOG_ENTRIES_TABLE']
 IS_OFFLINE = os.environ.get('IS_OFFLINE')
 
 CREATED_FIELD_NAME = 'created'
@@ -84,3 +85,21 @@ def get_incident_id_by_issue_key(issue_key):
     )
     if response.get('Count', 0) > 0:
         return response.get('Items')[0].get('incidentId')
+
+
+def put_log_entry(log_entry_id):
+    log_entries = resource.Table(LOG_ENTRIES_TABLE)
+    return log_entries.put_item(
+        Item={
+            'logEntryId': log_entry_id,
+        }
+    )
+
+
+def get_log_entry_by_id(log_entry_id):
+    log_entries = resource.Table(LOG_ENTRIES_TABLE)
+    response = log_entries.query(
+        KeyConditionExpression=Key('logEntryId').eq(log_entry_id)
+    )
+    if response.get('Count', 0) > 0:
+        return response.get('Items')[0].get('logEntryId')

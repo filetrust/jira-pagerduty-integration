@@ -16,8 +16,10 @@ provider:
       Resource:
         - "*"
   cronInterval: ${env:PAGERDUTY_CRON_INTERVAL}
+  logEntriesPollingInterval: ${env:LOG_ENTRIES_POLL_INTERVAL}
   environment:
     INCIDENTS_TABLE: ${self:custom.incidentsTableName}
+    LOG_ENTRIES_TABLE: ${self:custom.logEntriesTableName}
 
 functions:
   app:
@@ -29,6 +31,10 @@ functions:
     handler: pd_cron.run
     events:
       - schedule: 'rate(${self:provider.cronInterval})'
+  log_entries_polling:
+    handler: polling.log_entries
+    events:
+      - schedule: 'rate(${self:provider.logEntriesPollingInterval})'
 
 plugins:
   - serverless-python-requirements
@@ -38,6 +44,7 @@ plugins:
 
 custom:
   incidentsTableName: 'incidents-${self:provider.stage}'
+  logEntriesTableName: 'log-entries-${self:provider.stage}'
   wsgi:
     app: app.app
     packRequirements: false
@@ -68,6 +75,19 @@ resources:
             AttributeType: S
         KeySchema:
           - AttributeName: incidentId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    LogEntriesTableName:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.logEntriesTableName}
+        AttributeDefinitions:
+          - AttributeName: logEntryId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: logEntryId
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
