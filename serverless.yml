@@ -15,6 +15,7 @@ provider:
         - dynamodb:DeleteItem
       Resource:
         - "*"
+  cronInterval: ${env:PAGERDUTY_CRON_INTERVAL}
   environment:
     INCIDENTS_TABLE: ${self:custom.incidentsTableName}
 
@@ -24,6 +25,10 @@ functions:
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
+  cron:
+    handler: pd_cron.run
+    events:
+      - schedule: 'rate(${self:provider.cronInterval})'
 
 plugins:
   - serverless-python-requirements
@@ -61,32 +66,9 @@ resources:
         AttributeDefinitions:
           - AttributeName: incidentId
             AttributeType: S
-          - AttributeName: issueKey
-            AttributeType: S
         KeySchema:
           - AttributeName: incidentId
             KeyType: HASH
-          - AttributeName: issueKey
-            KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-          - IndexName: issueKey
-            Projection:
-              ProjectionType: ALL
-            KeySchema:
-              - AttributeName: issueKey
-                KeyType: HASH
-            ProvisionedThroughput:
-              ReadCapacityUnits: 5
-              WriteCapacityUnits: 5
-          - IndexName: incidentId
-            Projection:
-              ProjectionType: ALL
-            KeySchema:
-              - AttributeName: incidentId
-                KeyType: HASH
-            ProvisionedThroughput:
-              ReadCapacityUnits: 5
-              WriteCapacityUnits: 5
