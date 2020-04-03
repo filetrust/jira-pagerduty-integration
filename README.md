@@ -55,8 +55,7 @@ create API token.
 Copy `.env.example` to `.env` and edit it. Put your email to
 `JIRA_USER_EMAIL`, put the API token to `JIRA_API_TOKEN`, put your
 atlassian root URL (e.g. https://username.atlassian.net) to
-`JIRA_SERVER_URL`. Put the key of your project to `JIRA_PROJECT_KEY`
-(you can find the key in the list of the existing projects).
+`JIRA_SERVER_URL`.
 
 Put the full name of PagerDuty user into `PAGERDUTY_USER_NAME`
 variable (this is for the dev and test environments only, i.e. no
