@@ -13,30 +13,30 @@ logger.setLevel(logging.INFO)
 
 @app.route("/pagerduty-webhook", methods=["POST"])
 def pagerduty_webhook():
-    response = {'ok': True}
+    response = {"ok": True}
     try:
         webhooks.pagerduty(request.json)
     except Exception as e:
         logger.exception(
-            'Error occurred during processing of a PagerDuty webhook')
+            "Error occurred during processing of a PagerDuty webhook"
+        )
         response = {
-            'ok': False,
-            'error': repr(e),
+            "ok": False,
+            "error": repr(e),
         }
     return jsonify(response)
 
 
 @app.route("/jira-webhook", methods=["POST"])
 def jira_webhook():
-    response = {'ok': True}
+    response = {"ok": True}
     try:
         jirawebhook.jira(request.json)
     except Exception as e:
-        logger.exception(
-            'Error occurred during processing of a Jira webhook')
+        logger.exception("Error occurred during processing of a Jira webhook")
         response = {
-            'ok': False,
-            'error': repr(e),
+            "ok": False,
+            "error": repr(e),
         }
     return jsonify(response)
 
@@ -47,11 +47,13 @@ def jira_webhook():
 def cron():
     try:
         response = pd_cron.run(None, None)
-        response['ok'] = True
+        response["ok"] = True
     except Exception as e:
-        logger.exception('Error occurred during processing of a PagerDuty sync')
+        logger.exception(
+            "Error occurred during processing of a PagerDuty sync"
+        )
         response = {
-            'ok': False,
-            'error': repr(e),
+            "ok": False,
+            "error": repr(e),
         }
     return jsonify(response)
