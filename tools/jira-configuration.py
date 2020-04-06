@@ -13,8 +13,11 @@ import utils
 
 QUESTION_ISSUE_TYPE_NAME = 'Question'
 INCIDENT_MANAGER_ISSUE_TYPE_NAME = 'Incident Manager'
+TIMELINE_ISSUE_TYPE_NAME = 'Timeline'
+STAKEHOLDER_ISSUE_TYPE_NAME = 'Stakeholder'
 INCIDENT_PROJECT_KEY = os.environ['INCIDENT_PROJECT_KEY']
 PERSON_PROJECT_KEY = os.environ['PERSON_PROJECT_KEY']
+TIMELINE_PROJECT_KEY = os.environ['TIMELINE_PROJECT_KEY']
 QUESTION_PROJECT_KEY = os.environ['QUESTION_PROJECT_KEY']
 PAGERDUTY_USER_NAME = os.environ['PAGERDUTY_USER_NAME']
 FORMAT = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
@@ -131,6 +134,12 @@ if __name__ == "__main__":
         create_issue(QUESTION_PROJECT_KEY, fake.sentence())
         create_issue(QUESTION_PROJECT_KEY, fake.sentence())
 
+    project = create_project(TIMELINE_PROJECT_KEY, 'Timeline')
+    if project:
+        create_issue(TIMELINE_PROJECT_KEY, fake.sentence())
+        create_issue(TIMELINE_PROJECT_KEY, fake.sentence())
+        create_issue(TIMELINE_PROJECT_KEY, fake.sentence())
+
     for issue_link_type in jira.issue_link_types():
         if issue_link_type.name == QUESTION_ISSUE_TYPE_NAME:
             msg = (
@@ -171,3 +180,30 @@ if __name__ == "__main__":
         }
         jira.create_issue(fields=issue_dict)
         logger.info(f'Person "{PAGERDUTY_USER_NAME}" successfully created')
+
+    for issue_link_type in jira.issue_link_types():
+        if issue_link_type.name == TIMELINE_ISSUE_TYPE_NAME:
+            msg = (
+                f'Issue link type "{INCIDENT_MANAGER_ISSUE_TYPE_NAME}" '
+                f'already exists. Skipping...'
+            )
+            logger.info(msg)
+            break
+    else:
+        create_issue_link_type(
+            TIMELINE_ISSUE_TYPE_NAME, 'has timeline', 'is timeline of')
+
+    for issue_link_type in jira.issue_link_types():
+        if issue_link_type.name == STAKEHOLDER_ISSUE_TYPE_NAME:
+            msg = (
+                f'Issue link type "{STAKEHOLDER_ISSUE_TYPE_NAME}" '
+                f'already exists. Skipping...'
+            )
+            logger.info(msg)
+            break
+    else:
+        create_issue_link_type(
+            STAKEHOLDER_ISSUE_TYPE_NAME,
+            'has stakeholder',
+            'is stakeholder of'
+        )
