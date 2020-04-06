@@ -15,18 +15,28 @@ cd jira-pagerduty-integration
 ## Make and activate a virtual environment:
 
 ```
-python -m venv env
-source env/bin/activate
+pipenv --python 3
+source $(pipenv --venv)/bin/activate
 ```
 
-## Add python frameworks
+## Install python dependencies
 
 ```
-pip instal -r requirements.txt
-pip install -r requirements-dev.txt
+pipenv install --dev
 ```
 
 ## Install `serverless`:
+
+#### Install `npm`
+
+If you don't have `npm` installed, you can install it by means of the
+following command:
+
+```
+nodeenv -p
+```
+
+Now install `serverless`:
 
 ```
 npm install -g serverless
