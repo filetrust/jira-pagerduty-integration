@@ -14,6 +14,7 @@ import utils
 QUESTION_ISSUE_TYPE_NAME = 'Question'
 INCIDENT_MANAGER_ISSUE_TYPE_NAME = 'Incident Manager'
 TIMELINE_ISSUE_TYPE_NAME = 'Timeline'
+STAKEHOLDER_ISSUE_TYPE_NAME = 'Stakeholder'
 INCIDENT_PROJECT_KEY = os.environ['INCIDENT_PROJECT_KEY']
 PERSON_PROJECT_KEY = os.environ['PERSON_PROJECT_KEY']
 TIMELINE_PROJECT_KEY = os.environ['TIMELINE_PROJECT_KEY']
@@ -191,3 +192,18 @@ if __name__ == "__main__":
     else:
         create_issue_link_type(
             TIMELINE_ISSUE_TYPE_NAME, 'has timeline', 'is timeline of')
+
+    for issue_link_type in jira.issue_link_types():
+        if issue_link_type.name == STAKEHOLDER_ISSUE_TYPE_NAME:
+            msg = (
+                f'Issue link type "{STAKEHOLDER_ISSUE_TYPE_NAME}" '
+                f'already exists. Skipping...'
+            )
+            logger.info(msg)
+            break
+    else:
+        create_issue_link_type(
+            STAKEHOLDER_ISSUE_TYPE_NAME,
+            'has stakeholder',
+            'is stakeholder of'
+        )
