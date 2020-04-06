@@ -6,6 +6,8 @@ verify_ssl = true
 [dev-packages]
 Faker = "==4.0.2"
 nodeenv = "*"
+black = "==19.3b0"
+flake8 = "==3.7.8"
 
 [packages]
 jira = "==2.0.0"
