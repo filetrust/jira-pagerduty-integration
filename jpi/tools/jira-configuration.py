@@ -8,7 +8,7 @@ import json
 import requests
 from requests.auth import HTTPBasicAuth
 
-import utils
+from jpi import utils
 
 
 QUESTION_ISSUE_TYPE_NAME = "Question"

@@ -2,9 +2,10 @@ from datetime import datetime, timedelta
 import logging
 import os
 
-import db
-import utils
-import webhooks
+from jpi import db
+from jpi import utils
+from jpi import webhooks
+
 
 INCIDENTS_ENDPOINT = "incidents"
 P1_PRIORITY_NAME = "P1"

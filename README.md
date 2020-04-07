@@ -141,6 +141,9 @@ PagerDuty webhook.
 
 # Configure PagerDuty webhook
 
+Go to [API Access](https://atykhonov2.pagerduty.com/api_keys) and
+create a new API key.
+
 Go to [Extensions](https://atykhonov.pagerduty.com/extensions) page,
 click on `New Extension`, select `Generic V2 Webhook`, put into `Name`
 some name (e.g. `pjsync`), select an existing PagerDuty service

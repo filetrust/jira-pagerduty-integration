@@ -4,6 +4,7 @@ import os
 import boto3
 from boto3.dynamodb.conditions import Attr, Key
 
+
 INCIDENTS_TABLE = os.environ["INCIDENTS_TABLE"]
 LOG_ENTRIES_TABLE = os.environ["LOG_ENTRIES_TABLE"]
 IS_OFFLINE = os.environ.get("IS_OFFLINE")

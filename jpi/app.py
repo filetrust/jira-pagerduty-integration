@@ -2,9 +2,8 @@ import logging
 
 from flask import Flask, jsonify, request
 
-import jirawebhook
-import webhooks
-import pd_cron
+from jpi import jirawebhook, pd_cron, webhooks
+
 
 app = Flask(__name__)
 logger = logging.getLogger()

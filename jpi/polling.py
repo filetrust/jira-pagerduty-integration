@@ -4,8 +4,8 @@ import os
 
 from jira.exceptions import JIRAError
 
-import db
-import utils
+from jpi import db
+from jpi import utils
 
 
 LOG_ENTRIES_ENDPOINT = "/log_entries"

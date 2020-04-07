@@ -1,4 +1,4 @@
-service: pjsync
+service: jpi
 
 provider:
   name: aws
@@ -28,7 +28,7 @@ functions:
       - http: ANY /
       - http: 'ANY {proxy+}'
   cron:
-    handler: pd_cron.run
+    handler: jpi.pd_cron.run
     events:
       - schedule: 'rate(${self:provider.cronInterval})'
   log_entries_polling:
@@ -46,7 +46,7 @@ custom:
   incidentsTableName: 'incidents-${self:provider.stage}'
   logEntriesTableName: 'log-entries-${self:provider.stage}'
   wsgi:
-    app: app.app
+    app: jpi.app.app
     packRequirements: false
     pythonBin: python3
   pythonRequirements:
@@ -59,6 +59,8 @@ custom:
     stages:
       - dev
       - test
+  dotenv:
+    basePath: ./
 
 package:
   exclude:

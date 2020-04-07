@@ -3,8 +3,9 @@ import os
 
 from jira.exceptions import JIRAError
 
-import db
-import utils
+from jpi import db
+from jpi import utils
+
 
 P1_PRIORITY_NAME = "P1"
 PERSON_PROJECT_KEY = os.environ["PERSON_PROJECT_KEY"]

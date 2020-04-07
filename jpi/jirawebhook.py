@@ -1,10 +1,11 @@
-import db
 import logging
-import utils
+
+from jpi import db
+from jpi import utils
+
 
 INCIDENT_ENDPOINT = "incidents"
 STATUS_RESOLVED = "resolved"
-
 
 logger = logging.getLogger(__name__)
 
