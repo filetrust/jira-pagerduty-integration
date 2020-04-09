@@ -29,11 +29,11 @@ functions:
       - http: ANY /
       - http: 'ANY {proxy+}'
   cron:
-    handler: jpi.pd_cron.run
+    handler: jpi/pd_cron.run
     events:
       - schedule: 'rate(${self:provider.cronInterval})'
   log_entries_polling:
-    handler: polling.log_entries
+    handler: jpi/polling.log_entries
     events:
       - schedule: 'rate(${self:provider.logEntriesPollingInterval})'
 
@@ -47,7 +47,7 @@ custom:
   incidentsTableName: 'incidents-${self:provider.stage}'
   logEntriesTableName: 'log-entries-${self:provider.stage}'
   wsgi:
-    app: jpi.app.app
+    app: jpi/app.app
     packRequirements: false
     pythonBin: python3
   pythonRequirements:
