@@ -81,7 +81,7 @@ In order to generate fake Jira projects and issues (for testing and
 development purposes), execute the following command:
 
 ```
-dotenv run python -m tools.jira-configuration
+dotenv run python -m jpi.tools.jira-configuration
 ```
 
 
