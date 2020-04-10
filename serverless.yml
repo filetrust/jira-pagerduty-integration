@@ -82,7 +82,7 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-    LogEntriesTableName:
+    LogEntriesTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:custom.logEntriesTableName}
