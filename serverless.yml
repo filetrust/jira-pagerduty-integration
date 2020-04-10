@@ -5,6 +5,7 @@ provider:
   name: aws
   runtime: python3.7
   stage: ${env:STAGE}
+  cfnRole: ${env:CFN_ROLE_ARN}
   iamRoleStatements:
     - Effect: Allow
       Action:
