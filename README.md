@@ -15,7 +15,7 @@ cd jira-pagerduty-integration
 ## Make and activate a virtual environment:
 
 ```
-pipenv --python 3
+pipenv --python 3.7
 source $(pipenv --venv)/bin/activate
 ```
 
@@ -25,9 +25,23 @@ source $(pipenv --venv)/bin/activate
 pipenv install --dev
 ```
 
+## AWS configuration
+
+Configure `awscli` on your machine:
+
+```
+aws configure
+```
+
+Then do the remaining AWS configurations using the following command:
+
+```
+./jpi/tools/aws-configuration.sh
+```
+
 ## Install `serverless`:
 
-#### Install `npm`
+### Install `npm`
 
 If you don't have `npm` installed, you can install it by means of the
 following command:
@@ -48,34 +62,50 @@ and other dependencies:
 npm install
 ```
 
-## Local DynamoDB
+## Install and run local DynamoDB
 
-For local development download local-based DynamoDB package from 
-[AWS DynamoDB](https://docs.aws.amazon.com/dynamodb/index.html) service 
+Install DynamoDB by means of the following command:
 
-```sls dynamodb install```
+```
+sls dynamodb install
+```
 
-# Configure Jira
+and start it
 
-Sign up and create a project.
+```
+sls dynamodb start
+```
+
+## PagerDuty and Jira API tokens
+
+### PagerDuty API tokens
+
+Go to [API Access Keys](https://atykhonov2.pagerduty.com/api_keys) and
+create a new API key.
+
+### Jira API tokens
 
 Go to [API tokens](https://id.atlassian.com/manage/api-tokens) and
-create API token.
+create an API token.
+
+## Create a configuration file
 
 Copy `.env.example` to `.env` and edit it. Put your email to
-`JIRA_USER_EMAIL`, put the API token to `JIRA_API_TOKEN`, put your
-atlassian root URL (e.g. https://username.atlassian.net) to
-`JIRA_SERVER_URL`.
+`JIRA_USER_EMAIL` and `PAGERDUTY_USER_EMAIL`, put the API tokens to
+`JIRA_API_TOKEN` and `PAGERDUTY_API_TOKEN`, put your atlassian root
+URL (e.g. https://username.atlassian.net) to `JIRA_SERVER_URL`.
 
 Put the full name of PagerDuty user into `PAGERDUTY_USER_NAME`
 variable (this is for the dev and test environments only, i.e. no
 needs to have the variable configured on production
-environment). During execution of `tools.jira-configuration` (see
+environment). During execution of `jpi.tools.jira-configuration` (see
 below) the full name is used to create a Jira issue in `PERSON`
 project. When a Jira issue is created by the integration, a Jira issue
 (in `PERSON` project) is searched by PagerDuty assignee. If the issue
 is found then it is linked to the newly created issue using `Incident
 Manager` link type.
+
+## Jira configuration
 
 In order to generate fake Jira projects and issues (for testing and
 development purposes), execute the following command:
@@ -84,40 +114,93 @@ development purposes), execute the following command:
 dotenv run python -m jpi.tools.jira-configuration
 ```
 
+## PagerDuty configuration
 
-# AWS configuration
+Go to [Incident Priority Settings
+](https://glasswall-qa.pagerduty.com/account/incident_priorities) and
+make sure that Incident Priority Levels are enabled.
 
-Be sure you have a configured account on Amazon - AWS.
+## Serve the WSGI application locally
 
-If not done before, register new account on [AWS](https://aws.amazon.com/). 
-Good practice if you will use not root account for deploying the application
-After all required steps for creating finished, you need to create new user 
-in [AWS Console](https://console.aws.amazon.com/iam/home#/users). 
-Let name it **gwuser**. 
-
-Add admin permissions to the **gwuser** and then login to the AWS Console 
-under **gwuser** credentials [AWS Credential page](https://console.aws.amazon.com/iam/home?#/security_credentials).
-Generate new access key. Download generated file AccessKeys.csv
-
-Get back to the termanal and install _awscli_ utility via
-
-```pip instal awscli ```
-
-After that you can configure aws credential on you machine
-
-```aws configure```
-
-The screen should looks like
+Execute the following command in order to start the local server:
 
 ```
-AWS Access Key ID [None]: AKIAI44QH8DHBEXAMPLE
-AWS Secret Access Key [None]: je7MtGbClwBF/2Zp9Utk/h3yCo8nvbEXAMPLEKEY
-Default region name [None]: us-east-1
-Default output format [None]: text
+sls wsgi serve
 ```
 
+## Expose your local web server.
 
-# Deploy serverless application
+Download, install and execute [ngrok](https://ngrok.com):
+
+```
+ngrok http 5000
+```
+
+Use the https URL to create the URLs for PagerDuty and Jira
+webhooks (read below).
+
+## Configure PagerDuty webhook
+
+Go to [Extensions](https://yourusername.pagerduty.com/extensions) and
+create a webhook with `Extension Type` equals to `Generic V2 Webhook`,
+`Name` equals to `jpi`, `Service` equals to any available service that
+you created before and URL equals to `<ngrok-url>/pagerduty-webhook`.
+
+## Configure Jira webhook
+
+Go to [System
+WebHooks](https://yourusername.atlassian.net/plugins/servlet/webhooks)
+and create a webhook with any convenient name and with URL equals to
+`<ngrok-url>/jira-webhook`.
+
+## Test the configuration
+
+Go to PagerDuty and create an incident with any `Impacted Service`,
+with any convenient `Title` and with `Incident Priority` equals to
+`P1`. Go to Jira, open `Incidents` project and check the issues. You
+should see the newly created issue with the same title you just
+inputed.
+
+## Scheduled functions
+
+The functionality of the project depends on `cron` and
+`log_entries_polling` functions that should be executed
+periodically. On a dev environment these functions are not executed
+periodically so they should be manually trigerred when you need them
+to be executed, e.g.:
+
+```
+IS_OFFLINE=True sls invoke local -f log_entries_polling
+```
+
+Create an incident with `Incident Priority` equals to `P2`. An
+incident created with priority other than `P1` shouldn't be
+automatically created in Jira. But, accordingly to the requirements,
+when priority is changed to `P1` an issue should be created in
+Jira. The responsibility of `cron` function is to monitor the existing
+incidents and act respectively on priority change. Change `Incident
+Priority` to `P1` of the recently created incident and execute the
+following command:
+
+```
+IS_OFFLINE=True sls invoke local -f cron
+```
+
+You should get something like the following in response:
+
+```
+{
+    "retrieved": 26,
+    "created": 1,
+    "changed": 0,
+    "tracked": 0
+}
+```
+
+As you can see `Created` equals to `1` which means that the priority
+change was succesfully detected and Jira issue was created.
+
+# Deploy serverless application to dev environment (AWS)
 
 In order to deploy the application execute the following command:
 
@@ -136,68 +219,24 @@ endpoints:
 
 ```
 
-Append `/pagerduty-webhook` to the endpoint and use it as an URL for a
-PagerDuty webhook.
+Use the endpoint URL to configure the webhooks in PagerDuty and Jira.
 
-# Configure PagerDuty webhook
-
-Go to [API Access](https://atykhonov2.pagerduty.com/api_keys) and
-create a new API key.
-
-Go to [Extensions](https://atykhonov.pagerduty.com/extensions) page,
-click on `New Extension`, select `Generic V2 Webhook`, put into `Name`
-some name (e.g. `pjsync`), select an existing PagerDuty service
-(create it if it doesn't exist) and input the PagerDuty webhook URL
-into `URL` field. Click `Save`.
-
-After this the serverless application should be executed each time
-when a new incident is created.
-
-
-
-# Local Development
-
-For agile development good idea to setup development local-based environment,
-which complete resembling the production, based on serverless/AWS stack.
-
-## Run database instance
-
-Run the database instance locally on http://localhost:8002
-
-```sls dynamodb start```
-
-For checking the db is up and running open in browser http://localhost:8002/shell/ page.
-
-
-## Run application local
-
-The command runs flask-base http server on 5000 port locally on the development machine.
-
-```sls wsgi serve```
-
-
-## Expose local server to public URL
-
-
-Download [Ngrok](https://ngrok.com), the brilliant solution for that.
-
-
-```ngrok http 5000```
-
-
-If you register your instance on the **Ngrok** site, you may get following screen.
+In order to execute the scheduled functions (`cron` or
+`log_entries_polling`) use the following command:
 
 ```
-Session Status                online
-Account                       Upwork Developer (Plan: Free)
-Version                       2.3.35
-Region                        United States (us)
-Web Interface                 http://127.0.0.1:4040
-Forwarding                    http://9d0af513.ngrok.io -> http://localhost:5000
-Forwarding                    https://9d0af513.ngrok.io -> http://localhost:5000
-
-Replace webhook URL on the PagerDuty site with generated link https://9d0af513.ngrok.io
-and now PagerDuty instance will trigger your local environment, rather then deployed
-to the Amazon Lambda service.
+sls invoke local -f cron
 ```
- 
+
+# Deploy serverless application to qa environment
+
+In order to deploy the application to qa environment execute the
+following commands:
+
+```
+sls login
+sls deploy --env qa
+```
+
+The scheduled functions should be executed automatically (no needs to
+execute them manually).
