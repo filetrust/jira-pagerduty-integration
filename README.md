@@ -25,20 +25,6 @@ source $(pipenv --venv)/bin/activate
 pipenv install --dev
 ```
 
-## AWS configuration
-
-Configure `awscli` on your machine:
-
-```
-aws configure
-```
-
-Then do the remaining AWS configurations using the following command:
-
-```
-./jpi/tools/aws-configuration.sh
-```
-
 ## Install `serverless`:
 
 ### Install `npm`
@@ -119,6 +105,23 @@ dotenv run python -m jpi.tools.jira-configuration
 Go to [Incident Priority Settings
 ](https://glasswall-qa.pagerduty.com/account/incident_priorities) and
 make sure that Incident Priority Levels are enabled.
+
+## AWS configuration
+
+Configure `awscli` on your machine:
+
+```
+aws configure
+```
+
+Then do the remaining AWS configurations using the following command:
+
+```
+./jpi/tools/aws-configuration.sh
+```
+
+The command creates a role and outputs its ARN. Put the ARN into
+`CFN_ROLE_ARN` variable (`.env` file).
 
 ## Serve the WSGI application locally
 
