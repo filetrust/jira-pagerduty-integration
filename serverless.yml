@@ -67,6 +67,7 @@ custom:
 package:
   exclude:
     - env/**
+    - node_modules/**
 
 resources:
   Resources:
