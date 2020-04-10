@@ -17,7 +17,12 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
-        - "*"
+        - Fn::GetAtt:
+            - IncidentsTable
+            - Arn
+        - Fn::GetAtt:
+            - LogEntriesTable
+            - Arn
   cronInterval: ${env:PAGERDUTY_CRON_INTERVAL}
   logEntriesPollingInterval: ${env:LOG_ENTRIES_POLL_INTERVAL}
   environment:
