@@ -26,13 +26,15 @@ def handler(event, context):
         ts = now - datetime.timedelta(hours=poll_past_hours)
     else:
         ts = datetime.datetime.strptime(
-            polling_timestamp, '%Y-%m-%d %H:%M:%S.%f%z')
+            polling_timestamp, "%Y-%m-%d %H:%M:%S.%f%z"
+        )
 
     params = {"since": str(ts)}
     processing_timestamp = db.get_now()
     try:
         log_entries = list(
-            pagerduty.iter_all(LOG_ENTRIES_ENDPOINT, params=params))
+            pagerduty.iter_all(LOG_ENTRIES_ENDPOINT, params=params)
+        )
     except PDClientError:
         msg = "Error reading Log Entries from PagerDuty instance"
         result["ok"] = False
@@ -50,7 +52,8 @@ def handler(event, context):
                 continue
             if log_entry["type"] == "status_update_log_entry":
                 logger.info(
-                    "[{}] New status update found".format(log_entry["id"]))
+                    "[{}] New status update found".format(log_entry["id"])
+                )
                 issue_key = db.get_issue_key_by_incident_id(
                     log_entry["incident"]["id"]
                 )
@@ -93,7 +96,8 @@ def handler(event, context):
                         result["error"] = msg
                 else:
                     logger.info(
-                        "[{}] Issue key not found".format(log_entry["id"]))
+                        "[{}] Issue key not found".format(log_entry["id"])
+                    )
 
             db.put_log_entry(log_entry["id"])
 
