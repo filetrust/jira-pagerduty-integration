@@ -23,6 +23,9 @@ provider:
         - Fn::GetAtt:
             - LogEntriesTable
             - Arn
+        - Fn::GetAtt:
+            - ConfigTable
+            - Arn
   cronInterval: ${env:PAGERDUTY_CRON_INTERVAL}
   logEntriesPollingInterval: ${env:LOG_ENTRIES_POLL_INTERVAL}
   environment:
