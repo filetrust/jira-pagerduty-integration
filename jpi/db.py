@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+import pytz
 
 import boto3
 from boto3.dynamodb.conditions import Attr, Key
@@ -13,6 +14,8 @@ IS_OFFLINE = os.environ.get("IS_OFFLINE")
 CREATED_FIELD_NAME = "created"
 UPDATED_FIELD_NAME = "updated"
 RESOLVED_FIELD_NAME = "resolved"
+CONFIG_PARAMETER_FIELD_NAME = "parameterName"
+CONFIG_VALUE_FIELD_NAME = "value"
 
 LAST_POLLING_TIMESTAMP_PARAM='LastPollingTimestamp'
 
@@ -27,7 +30,7 @@ else:
 
 
 def get_now():
-    now = datetime.today()
+    now = datetime.now(pytz.utc)
     return str(now)
 
 
@@ -103,10 +106,10 @@ def get_config_parameter(name):
     config_table = resource.Table(CONFIG_TABLE)
 
     response = config_table.query(
-        KeyConditionExpression=Key("parameterName").eq(name)
+        KeyConditionExpression=Key(CONFIG_PARAMETER_FIELD_NAME).eq(name)
     )
     if response.get("Count", 0) > 0:
-        return response.get("Items")[0].get(LAST_POLLING_TIMESTAMP_PARAM)
+        return response.get("Items")[0].get(CONFIG_VALUE_FIELD_NAME)
 
 
 

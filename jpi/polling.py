@@ -1,6 +1,7 @@
 import datetime
 import logging
 import os
+import pytz
 
 from jira.exceptions import JIRAError
 from pdpyras import PDClientError
@@ -19,19 +20,16 @@ def handler(event, context):
     pagerduty = utils.get_pagerduty()
     jira = utils.get_jira()
     polling_timestamp = db.last_polling_timestamp()
-    print(polling_timestamp)
     if not polling_timestamp:
         poll_past_hours = int(os.environ.get("LOG_ENTRIES_POLL_PAST_HOURS"))
-        now = datetime.datetime.now()
+        now = datetime.datetime.now(pytz.utc)
         ts = now - datetime.timedelta(hours=poll_past_hours)
     else:
         ts = datetime.datetime.strptime(
-            polling_timestamp, '%Y-%m-%d %H:%M:%S.%f')
+            polling_timestamp, '%Y-%m-%d %H:%M:%S.%f%z')
 
-    print(ts)
     params = {"since": str(ts)}
     processing_timestamp = db.get_now()
-    print(params)
     try:
         log_entries = list(
             pagerduty.iter_all(LOG_ENTRIES_ENDPOINT, params=params))
