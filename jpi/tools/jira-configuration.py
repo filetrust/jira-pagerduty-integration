@@ -11,7 +11,8 @@ from jpi import settings, utils
 
 
 logging.basicConfig(
-    stream=sys.stdout, level=logging.DEBUG, format=settings.LOGGING_FORMAT)
+    stream=sys.stdout, level=logging.DEBUG, format=settings.LOGGING_FORMAT
+)
 [
     logging.getLogger(p).setLevel(logging.ERROR)
     for p in ["faker.factory", "urllib3"]
@@ -58,7 +59,7 @@ def create_project(key, name):
         f"{settings.JIRA_API_URL}/project",
         data=payload,
         headers=headers,
-        auth=auth
+        auth=auth,
     )
 
     if not response.ok:
@@ -149,7 +150,8 @@ if __name__ == "__main__":
         )
 
     query = 'project={} and summary~"{}"'.format(
-        settings.PERSON_PROJECT_KEY, settings.PAGERDUTY_USER_NAME)
+        settings.PERSON_PROJECT_KEY, settings.PAGERDUTY_USER_NAME
+    )
     persons = jira.search_issues(query)
     if persons:
         msg = 'Person "{}" already exists. Skipping...'
@@ -162,7 +164,8 @@ if __name__ == "__main__":
         }
         jira.create_issue(fields=issue_dict)
         logger.info(
-            f'Person "{settings.PAGERDUTY_USER_NAME}" successfully created')
+            f'Person "{settings.PAGERDUTY_USER_NAME}" successfully created'
+        )
 
     for issue_link_type in jira.issue_link_types():
         if issue_link_type.name == settings.TIMELINE_ISSUE_TYPE_NAME:
@@ -183,5 +186,5 @@ if __name__ == "__main__":
         create_issue_link_type(
             settings.STAKEHOLDER_ISSUE_TYPE_NAME,
             "has stakeholder",
-            "is stakeholder of"
+            "is stakeholder of",
         )
