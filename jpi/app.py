@@ -2,7 +2,7 @@ import logging
 
 from flask import Flask, jsonify, request
 
-from jpi import webhooks, polling
+from jpi import webhooks
 
 app = Flask(__name__)
 logger = logging.getLogger()

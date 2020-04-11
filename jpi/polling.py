@@ -128,7 +128,8 @@ def cron_handler(event, context):
 
     result = {"ok": True}
     now = datetime.datetime.today()
-    since = now.replace(minute=0, hour=0, second=0, microsecond=0
+    since = now.replace(
+        minute=0, hour=0, second=0, microsecond=0
     ) - datetime.timedelta(days=int(PAGERDUTY_CRON_SYNC_DAYS))
 
     created = 0
