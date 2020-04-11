@@ -1,5 +1,4 @@
 import logging
-import os
 import sys
 
 from faker import Faker
