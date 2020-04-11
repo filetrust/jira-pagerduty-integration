@@ -33,16 +33,12 @@ def jira_webhook():
     return jsonify(response)
 
 
-# The handler serves to 'manually' run of the polling function. It's useful for
-# development and/or support
-@app.route("/pagerduty-poll", methods=["POST"])
-def pagerduty_poll():
-    try:
-        response = polling.handler(None, None)
-        response["ok"] = True
-    except Exception as e:
-        logger.exception(
-            "Error occurred during processing of a PagerDuty poll"
-        )
-        response = {"ok": False, "error": repr(e)}
-    return jsonify(response)
+try:
+    # In some cases there is a need to use custom routes that are not
+    # needed for the project but for development purposes only. If you
+    # need them, please attach them to `dev_routes` blueprint that is
+    # defined in the module `jpi.tools.dev_routes`.
+    from jpi.tools.dev_routes import dev_routes
+    app.register_blueprint(dev_routes)
+except ImportError:
+    pass

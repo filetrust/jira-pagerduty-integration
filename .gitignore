@@ -32,3 +32,6 @@ serverless_sdk
 
 #Jetbrains
 .idea
+
+# custom routes for dev purposes
+/jpi/tools/dev_routes.py
