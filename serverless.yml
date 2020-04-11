@@ -23,8 +23,7 @@ provider:
         - Fn::GetAtt:
             - LogEntriesTable
             - Arn
-  cronInterval: ${env:PAGERDUTY_CRON_INTERVAL}
-  logEntriesPollingInterval: ${env:LOG_ENTRIES_POLL_INTERVAL}
+  pollingInterval: ${env:PAGERDUTY_POLL_INTERVAL}
   environment:
     INCIDENTS_TABLE: ${self:custom.incidentsTableName}
     LOG_ENTRIES_TABLE: ${self:custom.logEntriesTableName}
@@ -36,14 +35,10 @@ functions:
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
-  cron:
-    handler: jpi/pd_cron.handler
-    events:
-      - schedule: 'rate(${self:provider.cronInterval})'
   log_entries_polling:
     handler: jpi/polling.handler
     events:
-      - schedule: 'rate(${self:provider.logEntriesPollingInterval})'
+      - schedule: 'rate(${self:provider.pollingInterval})'
 
 plugins:
   - serverless-python-requirements
