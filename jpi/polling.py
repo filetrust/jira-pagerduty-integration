@@ -102,6 +102,6 @@ def handler(event, context):
             db.put_log_entry(log_entry["id"])
 
     # anyway put last timestamp the the db at the end of last issues polling
-    db.update_polling_timestamp(processing_timestamp, result)
+    db.update_polling_timestamp(processing_timestamp)
 
     return result
