@@ -113,5 +113,5 @@ def last_polling_timestamp():
     return get_config_parameter(LAST_POLLING_TIMESTAMP_PARAM)
 
 
-def update_polling_timestamp(timestamp=get_now(), result=None):
-    return update_config_parameter(LAST_POLLING_TIMESTAMP_PARAM, get_now())
+def update_polling_timestamp(timestamp):
+    return update_config_parameter(LAST_POLLING_TIMESTAMP_PARAM, timestamp)
