@@ -39,6 +39,7 @@ try:
     # need them, please attach them to `dev_routes` blueprint that is
     # defined in the module `jpi.tools.dev_routes`.
     from jpi.tools.dev_routes import dev_routes
+
     app.register_blueprint(dev_routes)
 except ImportError:
     pass

@@ -16,17 +16,11 @@ TIMELINE_PROJECT_KEY = os.environ["TIMELINE_PROJECT_KEY"]
 
 def handle_log_entry(log_entry):
     jira = utils.get_jira()
-    logger.info(
-        "[{}] New status update found".format(log_entry["id"])
-    )
-    issue_key = db.get_issue_key_by_incident_id(
-        log_entry["incident"]["id"]
-    )
+    logger.info("[{}] New status update found".format(log_entry["id"]))
+    issue_key = db.get_issue_key_by_incident_id(log_entry["incident"]["id"])
     if issue_key:
         logger.info(
-            "[{}] Related issue found: {}".format(
-                log_entry["id"], issue_key
-            )
+            "[{}] Related issue found: {}".format(log_entry["id"], issue_key)
         )
         try:
             jira.issue(issue_key)
@@ -47,18 +41,14 @@ def handle_log_entry(log_entry):
                     timeline_issue.key
                 )
             )
-            utils.link_issue(
-                timeline_issue.key, issue_key, "has timeline"
-            )
+            utils.link_issue(timeline_issue.key, issue_key, "has timeline")
         except JIRAError:
             msg = "[{}] Error creating timeline link to Jira issue {}"
             logger.exception(msg.format(issue_key))
             return
         db.put_log_entry(log_entry["id"])
     else:
-        logger.info(
-            "[{}] Issue key not found".format(log_entry["id"])
-        )
+        logger.info("[{}] Issue key not found".format(log_entry["id"]))
 
 
 def polling_handler(event, context):
@@ -100,12 +90,7 @@ def polling_handler(event, context):
     # anyway put last timestamp the the db at the end of last issues polling
     db.update_polling_timestamp(processing_timestamp)
 
-    return {
-        **result,
-        **{
-            "timeline": timeline
-        }
-    }
+    return {**result, **{"timeline": timeline}}
 
 
 INCIDENTS_ENDPOINT = "incidents"
@@ -227,7 +212,7 @@ def cron_handler(event, context):
             "created": created,
             "changed": changed,
             "tracked": tracked,
-        }
+        },
     }
 
 
