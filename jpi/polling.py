@@ -33,7 +33,7 @@ def handler(event, context):
     try:
         log_entries = list(
             pagerduty.iter_all(LOG_ENTRIES_ENDPOINT, params=params))
-    except PDClientError as e:
+    except PDClientError:
         msg = "Error reading Log Entries from PagerDuty instance"
         result["ok"] = False
         result["error"] = msg
@@ -85,7 +85,7 @@ def handler(event, context):
                         utils.link_issue(
                             timeline_issue.key, issue_key, "has timeline"
                         )
-                    except JIRAError as e:
+                    except JIRAError:
                         msg = "[{}] Error creating timeline link to JIRA {}"
                         msg = msg.format(issue_key)
                         logger.exception(msg)
