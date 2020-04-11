@@ -2,8 +2,7 @@ import logging
 
 from flask import Flask, jsonify, request
 
-from jpi import jirawebhook, pd_cron, webhooks
-
+from jpi import jirawebhook, pd_cron, webhooks, polling
 
 app = Flask(__name__)
 logger = logging.getLogger()
@@ -45,11 +44,29 @@ def jira_webhook():
 @app.route("/pagerduty-sync", methods=["POST"])
 def cron():
     try:
-        response = pd_cron.run(None, None)
+        response = pd_cron.handler(None, None)
         response["ok"] = True
     except Exception as e:
         logger.exception(
             "Error occurred during processing of a PagerDuty sync"
+        )
+        response = {
+            "ok": False,
+            "error": repr(e),
+        }
+    return jsonify(response)
+
+
+# The handler serves to 'manually' run of the polling function. It's useful for
+# development and/or support
+@app.route("/pagerduty-poll", methods=["POST"])
+def polling_handler():
+    try:
+        response = polling.handler(None, None)
+        response["ok"] = True
+    except Exception as e:
+        logger.exception(
+            "Error occurred during processing of a PagerDuty poll"
         )
         response = {
             "ok": False,

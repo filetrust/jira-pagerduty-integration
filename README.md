@@ -176,6 +176,13 @@ The command runs flask-base http server on 5000 port locally on the development 
 ```sls wsgi serve```
 
 
+## Tune development PagerDuty instance
+
+Your developer PagerDuty instance has to allow priorities entering. 
+Goto https://atykhonov.pagerduty.com/status-dashboard/enable and enable
+ Priority Feature.
+
+
 ## Expose local server to public URL
 
 
