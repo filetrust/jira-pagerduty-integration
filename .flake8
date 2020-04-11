@@ -7,3 +7,4 @@ exclude =
     venv,
     .git,
     node_modules,
+    serverless_sdk,
