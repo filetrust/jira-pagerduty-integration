@@ -239,8 +239,6 @@ def handler(event, context):
     polling_result = polling_handler(event, context)
     cron_result = cron_handler(event, context)
     result = {**polling_result, **cron_result}
-    print(cron_result)
-    print(polling_result)
     if not polling_result.get("ok") or not cron_result.get("ok"):
         result["ok"] = False
         if not polling_result.get("ok"):
