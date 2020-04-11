@@ -1,10 +1,12 @@
 org: glasswall
+app: jpi
 service: jpi
 
 provider:
   name: aws
   runtime: python3.7
   stage: ${env:STAGE}
+  cfnRole: ${env:CFN_ROLE_ARN}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -15,7 +17,12 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
-        - "*"
+        - Fn::GetAtt:
+            - IncidentsTable
+            - Arn
+        - Fn::GetAtt:
+            - LogEntriesTable
+            - Arn
   cronInterval: ${env:PAGERDUTY_CRON_INTERVAL}
   logEntriesPollingInterval: ${env:LOG_ENTRIES_POLL_INTERVAL}
   environment:
@@ -61,13 +68,14 @@ custom:
       migrate: true
     stages:
       - dev
-      - test
+      - qa
   dotenv:
     basePath: ./
 
 package:
   exclude:
     - env/**
+    - node_modules/**
 
 resources:
   Resources:
@@ -84,7 +92,7 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-    LogEntriesTableName:
+    LogEntriesTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:custom.logEntriesTableName}
