@@ -46,7 +46,7 @@ def get_questions():
         try:
             with open(questions_file, 'r') as f:
                 questions = json.loads(f.read())
-        except Exception as error:
+        except Exception:
             questions = []
             logger.exception(
                 f'Error occurred while reading the predefined '
@@ -66,7 +66,7 @@ def link_issue(outward, inward, link_type):
     try:
         jira.create_issue_link(link_type, inward, outward)
         logger.info(f'Issue link type "{link_type}" successfully created')
-    except JIRAError as error:
+    except JIRAError:
         logger.exception(
             f'Error occurred during creating a link between "{outward}" '
             f'and "{inward}" issues using the type of link "{link_type}"'
