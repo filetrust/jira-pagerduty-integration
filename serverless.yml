@@ -28,6 +28,7 @@ provider:
   environment:
     INCIDENTS_TABLE: ${self:custom.incidentsTableName}
     LOG_ENTRIES_TABLE: ${self:custom.logEntriesTableName}
+    CONFIG_TABLE: ${self:custom.configTableName}
 
 functions:
   app:
@@ -36,11 +37,11 @@ functions:
       - http: ANY /
       - http: 'ANY {proxy+}'
   cron:
-    handler: jpi/pd_cron.run
+    handler: jpi/pd_cron.handler
     events:
       - schedule: 'rate(${self:provider.cronInterval})'
   log_entries_polling:
-    handler: jpi/polling.log_entries
+    handler: jpi/polling.handler
     events:
       - schedule: 'rate(${self:provider.logEntriesPollingInterval})'
 
@@ -53,6 +54,7 @@ plugins:
 custom:
   incidentsTableName: 'incidents-${self:provider.stage}'
   logEntriesTableName: 'log-entries-${self:provider.stage}'
+  configTableName: 'config-${self:provider.stage}'
   wsgi:
     app: jpi/app.app
     packRequirements: false
@@ -99,6 +101,19 @@ resources:
             AttributeType: S
         KeySchema:
           - AttributeName: logEntryId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    ConfigTableName:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.configTableName}
+        AttributeDefinitions:
+          - AttributeName: parameterName
+            AttributeType: S
+        KeySchema:
+          - AttributeName: parameterName
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1

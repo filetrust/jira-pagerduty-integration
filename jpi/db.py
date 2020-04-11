@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+import pytz
 
 import boto3
 from boto3.dynamodb.conditions import Attr, Key
@@ -7,11 +8,16 @@ from boto3.dynamodb.conditions import Attr, Key
 
 INCIDENTS_TABLE = os.environ["INCIDENTS_TABLE"]
 LOG_ENTRIES_TABLE = os.environ["LOG_ENTRIES_TABLE"]
+CONFIG_TABLE = os.environ["CONFIG_TABLE"]
 IS_OFFLINE = os.environ.get("IS_OFFLINE")
 
 CREATED_FIELD_NAME = "created"
 UPDATED_FIELD_NAME = "updated"
 RESOLVED_FIELD_NAME = "resolved"
+CONFIG_PARAMETER_FIELD_NAME = "parameterName"
+CONFIG_VALUE_FIELD_NAME = "value"
+
+LAST_POLLING_TIMESTAMP_PARAM='LastPollingTimestamp'
 
 if IS_OFFLINE:
     resource = boto3.resource(
@@ -24,7 +30,7 @@ else:
 
 
 def get_now():
-    now = datetime.today()
+    now = datetime.now(pytz.utc)
     return str(now)
 
 
@@ -85,3 +91,33 @@ def get_log_entry_by_id(log_entry_id):
     )
     if response.get("Count", 0) > 0:
         return response.get("Items")[0].get("logEntryId")
+
+
+def update_config_parameter(name, value):
+    config_table = resource.Table(CONFIG_TABLE)
+
+    return config_table.put_item(Item={
+        "parameterName": name,
+        "value": value
+    })
+
+
+def get_config_parameter(name):
+    config_table = resource.Table(CONFIG_TABLE)
+
+    response = config_table.query(
+        KeyConditionExpression=Key(CONFIG_PARAMETER_FIELD_NAME).eq(name)
+    )
+    if response.get("Count", 0) > 0:
+        return response.get("Items")[0].get(CONFIG_VALUE_FIELD_NAME)
+
+
+
+def last_polling_timestamp():
+    return get_config_parameter(LAST_POLLING_TIMESTAMP_PARAM)
+
+
+def post_polling(timestamp = get_now(), result = None):
+    return update_config_parameter(LAST_POLLING_TIMESTAMP_PARAM, get_now())
+
+

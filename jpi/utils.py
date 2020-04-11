@@ -39,7 +39,7 @@ def get_pagerduty():
 
 
 def get_questions():
-    global questions;
+    global questions
     if questions is None:
         questions_file = os.path.join(
             settings.PROJECT_PATH, os.environ['QUESTIONS_FILE'])
