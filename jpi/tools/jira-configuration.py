@@ -35,10 +35,7 @@ auth = HTTPBasicAuth(
     os.environ["JIRA_USER_EMAIL"], os.environ["JIRA_API_TOKEN"]
 )
 
-headers = {
-    "Accept": "application/json",
-    "Content-Type": "application/json",
-}
+headers = {"Accept": "application/json", "Content-Type": "application/json"}
 
 
 def create_project(key, name):

@@ -18,10 +18,7 @@ def pagerduty_webhook():
         logger.exception(
             "Error occurred during processing of a PagerDuty webhook"
         )
-        response = {
-            "ok": False,
-            "error": repr(e),
-        }
+        response = {"ok": False, "error": repr(e)}
     return jsonify(response)
 
 
@@ -32,10 +29,7 @@ def jira_webhook():
         jirawebhook.jira(request.json)
     except Exception as e:
         logger.exception("Error occurred during processing of a Jira webhook")
-        response = {
-            "ok": False,
-            "error": repr(e),
-        }
+        response = {"ok": False, "error": repr(e)}
     return jsonify(response)
 
 
@@ -50,10 +44,7 @@ def cron():
         logger.exception(
             "Error occurred during processing of a PagerDuty sync"
         )
-        response = {
-            "ok": False,
-            "error": repr(e),
-        }
+        response = {"ok": False, "error": repr(e)}
     return jsonify(response)
 
 
@@ -68,8 +59,5 @@ def polling_handler():
         logger.exception(
             "Error occurred during processing of a PagerDuty poll"
         )
-        response = {
-            "ok": False,
-            "error": repr(e),
-        }
+        response = {"ok": False, "error": repr(e)}
     return jsonify(response)
