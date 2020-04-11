@@ -10,10 +10,10 @@ STATUS_RESOLVED = "resolved"
 logger = logging.getLogger(__name__)
 
 
-def jira(event):
+def webhook_handler(event):
     """
-    A webhook function which basically triggered by changing the JIRA Ticket
-    to Done state.
+    A webhook handler that should handle the events triggered by
+    Jira webhook.
     """
     changelog = event.get("changelog", {})
     changes = changelog.get("items", [{}])

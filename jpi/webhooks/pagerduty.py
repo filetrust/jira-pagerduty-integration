@@ -108,9 +108,10 @@ def handle_resolved_incident(message):
                 logger.exception("Error occurred during resolving Jira issue")
 
 
-def pagerduty(event):
+def webhook_handler(event):
     """
-    A webhook that should be used by PagerDuty.
+    A webhook handler that should handle the events triggered by
+    PagerDuty webhook.
     """
     messages = event.get("messages", [])
     for message in messages:
