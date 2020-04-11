@@ -23,6 +23,9 @@ provider:
         - Fn::GetAtt:
             - LogEntriesTable
             - Arn
+        - Fn::GetAtt:
+            - ConfigTable
+            - Arn
   pollingInterval: ${env:PAGERDUTY_POLL_INTERVAL}
   environment:
     INCIDENTS_TABLE: ${self:custom.incidentsTableName}
@@ -100,7 +103,7 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-    ConfigTableName:
+    ConfigTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:custom.configTableName}

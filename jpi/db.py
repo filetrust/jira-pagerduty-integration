@@ -17,7 +17,7 @@ RESOLVED_FIELD_NAME = "resolved"
 CONFIG_PARAMETER_FIELD_NAME = "parameterName"
 CONFIG_VALUE_FIELD_NAME = "value"
 
-LAST_POLLING_TIMESTAMP_PARAM='LastPollingTimestamp'
+LAST_POLLING_TIMESTAMP_PARAM = "LastPollingTimestamp"
 
 if IS_OFFLINE:
     resource = boto3.resource(
@@ -96,10 +96,7 @@ def get_log_entry_by_id(log_entry_id):
 def update_config_parameter(name, value):
     config_table = resource.Table(CONFIG_TABLE)
 
-    return config_table.put_item(Item={
-        "parameterName": name,
-        "value": value
-    })
+    return config_table.put_item(Item={"parameterName": name, "value": value})
 
 
 def get_config_parameter(name):
@@ -112,12 +109,9 @@ def get_config_parameter(name):
         return response.get("Items")[0].get(CONFIG_VALUE_FIELD_NAME)
 
 
-
 def last_polling_timestamp():
     return get_config_parameter(LAST_POLLING_TIMESTAMP_PARAM)
 
 
-def post_polling(timestamp = get_now(), result = None):
-    return update_config_parameter(LAST_POLLING_TIMESTAMP_PARAM, get_now())
-
-
+def update_polling_timestamp(timestamp):
+    return update_config_parameter(LAST_POLLING_TIMESTAMP_PARAM, timestamp)
