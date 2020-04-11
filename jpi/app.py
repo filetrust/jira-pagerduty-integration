@@ -2,7 +2,7 @@ import logging
 
 from flask import Flask, jsonify, request
 
-from jpi import jirawebhook, webhooks, polling
+from jpi import webhooks, polling
 
 app = Flask(__name__)
 logger = logging.getLogger()
@@ -26,7 +26,7 @@ def pagerduty_webhook():
 def jira_webhook():
     response = {"ok": True}
     try:
-        jirawebhook.jira(request.json)
+        webhooks.jira(request.json)
     except Exception as e:
         logger.exception("Error occurred during processing of a Jira webhook")
         response = {"ok": False, "error": repr(e)}
