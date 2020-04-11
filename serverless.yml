@@ -105,7 +105,7 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-    ConfigTableName:
+    ConfigTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:custom.configTableName}
