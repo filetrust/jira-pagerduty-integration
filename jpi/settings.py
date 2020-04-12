@@ -2,6 +2,7 @@ import os
 
 
 PROJECT_PATH = os.path.abspath(os.path.dirname(__name__))
+IS_OFFLINE = os.environ.get("IS_OFFLINE")
 
 # Jira settings
 
@@ -28,8 +29,9 @@ JIRA_INCIDENT_SEVERITY = "SEV-0"
 
 PAGERDUTY_USER_NAME = os.environ["PAGERDUTY_USER_NAME"]
 LOG_ENTRIES_ENDPOINT = "/log_entries"
-LOG_ENTRIES_POLL_PAST_HOURS = \
-    int(os.environ.get("LOG_ENTRIES_POLL_PAST_HOURS", 1))
+LOG_ENTRIES_POLL_PAST_HOURS = int(
+    os.environ.get("LOG_ENTRIES_POLL_PAST_HOURS", 1)
+)
 
 # Logging settings
 
@@ -37,4 +39,16 @@ LOGGING_FORMAT = "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"
 
 # Database settings
 
+DATABASE_ENDPOINT_URL = "http://localhost:8002"
+
+INCIDENTS_TABLE = os.environ["INCIDENTS_TABLE"]
+LOG_ENTRIES_TABLE = os.environ["LOG_ENTRIES_TABLE"]
+CONFIG_TABLE = os.environ["CONFIG_TABLE"]
+
+CONFIG_PARAMETER_FIELD_NAME = "parameterName"
+CONFIG_VALUE_FIELD_NAME = "value"
 ISSUE_KEY_FIELD_NAME = "issueKey"
+INCIDENT_ID_FIELD_NAME = "incidentId"
+LOG_ENTRY_ID_FIELD_NAME = "logEntryId"
+LAST_POLLING_TIMESTAMP_PARAM = "LastPollingTimestamp"
+RESOLVED_FIELD_NAME = "resolved"
