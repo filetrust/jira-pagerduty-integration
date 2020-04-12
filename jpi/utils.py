@@ -99,7 +99,7 @@ def get_incident_manager(fullname):
         return persons[0]
 
 
-def create_jira_incident(summary, description, incident_manager=None):
+def create_jira_incident(summary, description="", incident_manager=None):
     """
     Create Jira issue in project with key `INCIDENT`.
     """
@@ -131,7 +131,5 @@ def create_jira_incident(summary, description, incident_manager=None):
     for s in stakeholders:
         link_issue(s, issue.key, "has stakeholder")
     if incident_manager:
-        link_issue(
-            incident_manager.key, issue.key, "has incident manager"
-        )
+        link_issue(incident_manager.key, issue.key, "has incident manager")
     return issue

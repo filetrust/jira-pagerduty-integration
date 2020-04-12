@@ -40,11 +40,12 @@ def handle_triggered_incident(message):
             entries = message.get("log_entries", [])
             for entry in entries:
                 incident_manager = utils.get_incident_manager(
-                    entries[0]["agent"]["summary"])
+                    entries[0]["agent"]["summary"]
+                )
                 issue = utils.create_jira_incident(
                     entry["channel"]["summary"],
                     entry["channel"]["details"],
-                    incident_manager=incident_manager
+                    incident_manager=incident_manager,
                 )
                 issue_key = issue.key
                 incident_fields[ISSUE_KEY_FIELD_NAME] = issue_key
