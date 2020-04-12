@@ -13,6 +13,7 @@ jira = None
 pagerduty = None
 questions = None
 logger = logging.getLogger()
+severity_field_id = None
 
 
 def get_jira():
@@ -76,7 +77,11 @@ def get_jira_severity_field_id():
     """
     Return `id` of a field which name equals to `Severity`.
     """
+    global severity_field_id
+    if severity_field_id:
+        return severity_field_id
     jira = get_jira()
     severity_fields = [f for f in jira.fields() if f["name"] == "Severity"]
     if severity_fields:
-        return severity_fields[0]["id"]
+        severity_field_id = severity_fields[0]["id"]
+    return severity_field_id
