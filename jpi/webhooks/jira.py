@@ -1,11 +1,7 @@
 import logging
 
-from jpi import db
-from jpi import utils
+from jpi import db, settings, utils
 
-
-INCIDENT_ENDPOINT = "incidents"
-STATUS_RESOLVED = "resolved"
 
 logger = logging.getLogger(__name__)
 
@@ -32,12 +28,12 @@ def webhook_handler(event):
             pagerduty = utils.get_pagerduty()
             try:
                 pagerduty.rput(
-                    INCIDENT_ENDPOINT,
+                    settings.INCIDENT_ENDPOINT,
                     json=[
                         {
                             "id": incident_id,
                             "type": "incident",
-                            "status": STATUS_RESOLVED,
+                            "status": settings.STATUS_RESOLVED,
                         }
                     ],
                 )
