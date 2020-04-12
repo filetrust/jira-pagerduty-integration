@@ -87,6 +87,18 @@ def get_jira_severity_field_id():
     return severity_field_id
 
 
+def get_incident_manager(fullname):
+    """
+    Return an incident manager by his/her full name.
+    """
+    jira = get_jira()
+    persons = jira.search_issues(
+        f'project={settings.PERSON_PROJECT_KEY} and summary~"{fullname}"'
+    )
+    if persons:
+        return persons[0]
+
+
 def create_jira_incident(summary, description, incident_manager=None):
     """
     Create Jira issue in project with key `INCIDENT`.

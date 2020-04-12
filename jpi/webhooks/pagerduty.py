@@ -39,13 +39,8 @@ def handle_triggered_incident(message):
             jira = utils.get_jira()
             entries = message.get("log_entries", [])
             for entry in entries:
-                incident_manager = None
-                assignee = entries[0]["agent"]["summary"]
-                persons = jira.search_issues(
-                    f'project={settings.PERSON_PROJECT_KEY} and summary~"{assignee}"'
-                )
-                if persons:
-                    incident_manager = persons[0]
+                incident_manager = utils.get_incident_manager(
+                    entries[0]["agent"]["summary"])
                 issue = utils.create_jira_incident(
                     entry["channel"]["summary"],
                     entry["channel"]["details"],
