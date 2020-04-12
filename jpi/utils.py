@@ -19,10 +19,10 @@ severity_field_id = None
 def get_jira():
     global jira
     if jira is None:
-        options = {"server": os.environ["JIRA_SERVER_URL"]}
+        options = {"server": settings.JIRA_SERVER_URL}
         basic_auth = (
-            os.environ["JIRA_USER_EMAIL"],
-            os.environ["JIRA_API_TOKEN"],
+            settings.JIRA_USER_EMAIL,
+            settings.JIRA_API_TOKEN,
         )
         jira = JIRA(options, basic_auth=basic_auth)
     return jira
@@ -31,9 +31,10 @@ def get_jira():
 def get_pagerduty():
     global pagerduty
     if pagerduty is None:
-        api_token = os.environ["PAGERDUTY_API_TOKEN"]
-        user_email_from = os.environ["PAGERDUTY_USER_EMAIL"]
-        pagerduty = APISession(api_token, default_from=user_email_from)
+        pagerduty = APISession(
+            settings.PAGERDUTY_API_TOKEN,
+            default_from=settings.PAGERDUTY_USER_EMAIL,
+        )
     return pagerduty
 
 
@@ -41,7 +42,7 @@ def get_questions():
     global questions
     if questions is None:
         questions_file = os.path.join(
-            settings.PROJECT_PATH, os.environ["QUESTIONS_FILE"]
+            settings.PROJECT_PATH, settings.QUESTIONS_FILE
         )
         try:
             with open(questions_file, "r") as f:
@@ -81,7 +82,10 @@ def get_jira_severity_field_id():
     if severity_field_id:
         return severity_field_id
     jira = get_jira()
-    severity_fields = [f for f in jira.fields() if f["name"] == "Severity"]
+    severity_fields = [
+        f for f in jira.fields()
+        if f["name"] == settings.JIRA_SEVERITY_FIELD_NAME
+    ]
     if severity_fields:
         severity_field_id = severity_fields[0]["id"]
     return severity_field_id

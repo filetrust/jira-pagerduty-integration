@@ -3,6 +3,7 @@ import os
 
 PROJECT_PATH = os.path.abspath(os.path.dirname(__name__))
 IS_OFFLINE = os.environ.get("IS_OFFLINE")
+QUESTIONS_FILE = os.environ["QUESTIONS_FILE"]
 
 # Jira settings
 
@@ -23,11 +24,15 @@ QUESTION_PROJECT_KEY = os.environ["QUESTION_PROJECT_KEY"]
 
 JIRA_ISSUE_STAKEHOLDERS = os.environ.get("JIRA_ISSUE_STAKEHOLDERS", "")
 
+JIRA_SEVERITY_FIELD_NAME = "Severity"
 JIRA_INCIDENT_SEVERITY = "SEV-0"
 
 # PagerDuty settings
 
-PAGERDUTY_USER_NAME = os.environ["PAGERDUTY_USER_NAME"]
+PAGERDUTY_API_TOKEN = os.environ["PAGERDUTY_API_TOKEN"]
+PAGERDUTY_USER_NAME = os.environ.get("PAGERDUTY_USER_NAME", "")
+PAGERDUTY_USER_EMAIL = os.environ["PAGERDUTY_USER_EMAIL"]
+
 LOG_ENTRIES_ENDPOINT = "/log_entries"
 INCIDENT_ENDPOINT = "incidents"
 STATUS_RESOLVED = "resolved"
