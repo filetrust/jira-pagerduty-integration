@@ -70,3 +70,13 @@ def link_issue(outward, inward, link_type):
             f'Error occurred during creating a link between "{outward}" '
             f'and "{inward}" issues using the type of link "{link_type}"'
         )
+
+
+def get_jira_severity_field_id():
+    """
+    Return `id` of a field which name equals to `Severity`.
+    """
+    jira = get_jira()
+    severity_fields = [f for f in jira.fields() if f["name"] == "Severity"]
+    if severity_fields:
+        return severity_fields[0]["id"]

@@ -39,11 +39,7 @@ def handle_triggered_incident(message):
         if not db_issue_key:
             jira = utils.get_jira()
             if severity_field_id is None:
-                fields = jira.fields()
-                severity_fields = [
-                    f for f in fields if f["name"] == "Severity"
-                ]
-                severity_field_id = severity_fields[0]["id"]
+                severity_field_id = utils.get_jira_severity_field_id()
             entries = message.get("log_entries", [])
             severity_field_value = "SEV-0"
             for entry in entries:
