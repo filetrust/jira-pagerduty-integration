@@ -34,6 +34,7 @@ STATUS_RESOLVED = "resolved"
 LOG_ENTRIES_POLL_PAST_HOURS = int(
     os.environ.get("LOG_ENTRIES_POLL_PAST_HOURS", 1)
 )
+P1_PRIORITY_NAME = "P1"
 
 # Logging settings
 
@@ -54,3 +55,4 @@ INCIDENT_ID_FIELD_NAME = "incidentId"
 LOG_ENTRY_ID_FIELD_NAME = "logEntryId"
 LAST_POLLING_TIMESTAMP_PARAM = "LastPollingTimestamp"
 RESOLVED_FIELD_NAME = "resolved"
+INCIDENT_NUMBER_FIELD_NAME = "incident_number"

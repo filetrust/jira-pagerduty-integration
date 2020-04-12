@@ -1,23 +1,14 @@
 import logging
-import os
 
 from jira.exceptions import JIRAError
 
 from jpi import db, settings, utils
 
 
-P1_PRIORITY_NAME = "P1"
-PERSON_PROJECT_KEY = os.environ["PERSON_PROJECT_KEY"]
-severity_field_id = None
 logger = logging.getLogger()
-
-ISSUE_KEY_FIELD_NAME = "issueKey"
-INCIDENT_NUMBER_FIELD_NAME = "incident_number"
-ISSUE_KEY_FIELD = "issue_key"
 
 
 def handle_triggered_incident(message):
-    global severity_field_id
     incident = message.get("incident", {})
     incident_id = incident["id"]
     issue_key = None
@@ -28,15 +19,14 @@ def handle_triggered_incident(message):
         priority_name = priority.get("name")
         if priority_name:
             incident_fields["priority"] = priority_name
-            high_priority = priority_name == P1_PRIORITY_NAME
-    incident_fields[INCIDENT_NUMBER_FIELD_NAME] = incident.get(
-        INCIDENT_NUMBER_FIELD_NAME
+            high_priority = priority_name == settings.P1_PRIORITY_NAME
+    incident_fields[settings.INCIDENT_NUMBER_FIELD_NAME] = incident.get(
+        settings.INCIDENT_NUMBER_FIELD_NAME
     )
 
     if high_priority:
         db_issue_key = db.get_issue_key_by_incident_id(incident_id)
         if not db_issue_key:
-            jira = utils.get_jira()
             entries = message.get("log_entries", [])
             for entry in entries:
                 incident_manager = utils.get_incident_manager(
@@ -48,7 +38,7 @@ def handle_triggered_incident(message):
                     incident_manager=incident_manager,
                 )
                 issue_key = issue.key
-                incident_fields[ISSUE_KEY_FIELD_NAME] = issue_key
+                incident_fields[settings.ISSUE_KEY_FIELD_NAME] = issue_key
                 db.put_incident(incident_id, incident_fields)
     else:
         db.put_incident(incident_id, incident_fields)
