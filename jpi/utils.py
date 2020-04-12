@@ -85,3 +85,41 @@ def get_jira_severity_field_id():
     if severity_fields:
         severity_field_id = severity_fields[0]["id"]
     return severity_field_id
+
+
+def create_jira_incident(summary, description, incident_manager=None):
+    """
+    Create Jira issue in project with key `INCIDENT`.
+    """
+    jira = get_jira()
+    issue_dict = {
+        "project": {"key": settings.INCIDENT_PROJECT_KEY},
+        "summary": summary,
+        "description": description,
+        "issuetype": {"name": "Bug"},
+        "priority": {"name": "Highest"},
+    }
+    severity_field_id = get_jira_severity_field_id()
+    if severity_field_id:
+        issue_dict[severity_field_id] = {
+            "value": settings.JIRA_INCIDENT_SEVERITY
+        }
+    issue = jira.create_issue(fields=issue_dict)
+    for q in get_questions():
+        question_dict = {
+            "project": {"key": settings.QUESTION_PROJECT_KEY},
+            "summary": q["summary"],
+            "description": q["description"],
+            "issuetype": {"name": "Bug"},
+        }
+        question = jira.create_issue(fields=question_dict)
+        link_issue(question, issue.key, "has question")
+    stakeholders = settings.JIRA_ISSUE_STAKEHOLDERS
+    stakeholders = [q for q in stakeholders.split(",") if q]
+    for s in stakeholders:
+        link_issue(s, issue.key, "has stakeholder")
+    if incident_manager:
+        link_issue(
+            incident_manager.key, issue.key, "has incident manager"
+        )
+    return issue

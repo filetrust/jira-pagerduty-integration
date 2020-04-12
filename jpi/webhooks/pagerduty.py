@@ -3,8 +3,7 @@ import os
 
 from jira.exceptions import JIRAError
 
-from jpi import db
-from jpi import utils
+from jpi import db, settings, utils
 
 
 P1_PRIORITY_NAME = "P1"
@@ -38,48 +37,23 @@ def handle_triggered_incident(message):
         db_issue_key = db.get_issue_key_by_incident_id(incident_id)
         if not db_issue_key:
             jira = utils.get_jira()
-            if severity_field_id is None:
-                severity_field_id = utils.get_jira_severity_field_id()
             entries = message.get("log_entries", [])
-            severity_field_value = "SEV-0"
             for entry in entries:
-                issue_dict = {
-                    "project": {"key": os.environ["INCIDENT_PROJECT_KEY"]},
-                    "summary": entry["channel"]["summary"],
-                    "description": entry["channel"]["details"],
-                    "issuetype": {"name": "Bug"},
-                    "priority": {"name": "Highest"},
-                }
-                if severity_field_id:
-                    issue_dict[severity_field_id] = {
-                        "value": severity_field_value
-                    }
-                issue = jira.create_issue(fields=issue_dict)
-                issue_key = issue.key
-                incident_fields[ISSUE_KEY_FIELD_NAME] = issue_key
-
-                db.put_incident(incident_id, incident_fields)
-                for q in utils.get_questions():
-                    question_dict = {
-                        "project": {"key": os.environ["QUESTION_PROJECT_KEY"]},
-                        "summary": q["summary"],
-                        "description": q["description"],
-                        "issuetype": {"name": "Bug"},
-                    }
-                    question = jira.create_issue(fields=question_dict)
-                    utils.link_issue(question, issue.key, "has question")
-                stakeholders = os.environ.get("JIRA_ISSUE_STAKEHOLDERS", "")
-                stakeholders = [q for q in stakeholders.split(",") if q]
-                for s in stakeholders:
-                    utils.link_issue(s, issue.key, "has stakeholder")
+                incident_manager = None
                 assignee = entries[0]["agent"]["summary"]
                 persons = jira.search_issues(
-                    f'project={PERSON_PROJECT_KEY} and summary~"{assignee}"'
+                    f'project={settings.PERSON_PROJECT_KEY} and summary~"{assignee}"'
                 )
                 if persons:
-                    utils.link_issue(
-                        persons[0].key, issue.key, "has incident manager"
-                    )
+                    incident_manager = persons[0]
+                issue = utils.create_jira_incident(
+                    entry["channel"]["summary"],
+                    entry["channel"]["details"],
+                    incident_manager=incident_manager
+                )
+                issue_key = issue.key
+                incident_fields[ISSUE_KEY_FIELD_NAME] = issue_key
+                db.put_incident(incident_id, incident_fields)
     else:
         db.put_incident(incident_id, incident_fields)
 
