@@ -38,8 +38,8 @@ functions:
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
-  log_entries_polling:
-    handler: jpi/polling.handler
+  log_entries:
+    handler: jpi/handlers.log_entries
     events:
       - schedule: 'rate(${self:provider.pollingInterval})'
 
