@@ -1,20 +1,15 @@
 import datetime
 import logging
-import os
 import re
 
 from jira.exceptions import JIRAError
 from pdpyras import PDClientError
 import pytz
 
-from jpi import db, utils
+from jpi import db, settings, utils
 
-LOG_ENTRIES_ENDPOINT = "/log_entries"
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-TIMELINE_PROJECT_KEY = os.environ["TIMELINE_PROJECT_KEY"]
-ISSUE_KEY_FIELD_NAME = "issueKey"
-INCIDENT_NUMBER_FIELD_NAME = "incident_number"
 
 
 def handle_priority_change_log_entry(log_entry):
@@ -34,7 +29,7 @@ def handle_priority_change_log_entry(log_entry):
             issue = utils.create_jira_incident(
                 incident["summary"], incident_manager=incident_manager
             )
-            incident_fields[ISSUE_KEY_FIELD_NAME] = issue.key
+            incident_fields[settings.ISSUE_KEY_FIELD_NAME] = issue.key
         db.put_incident(incident["id"], incident_fields)
 
 
@@ -59,7 +54,7 @@ def handle_log_entry(log_entry):
             return
 
         issue_dict = {
-            "project": {"key": os.environ["TIMELINE_PROJECT_KEY"]},
+            "project": {"key": settings.TIMELINE_PROJECT_KEY},
             "summary": log_entry["summary"],
             "issuetype": {"name": "Bug"},
         }
@@ -85,9 +80,10 @@ def handler(event, context):
     pagerduty = utils.get_pagerduty()
     polling_timestamp = db.last_polling_timestamp()
     if not polling_timestamp:
-        poll_past_hours = int(os.environ.get("LOG_ENTRIES_POLL_PAST_HOURS"))
         now = datetime.datetime.now(pytz.utc)
-        ts = now - datetime.timedelta(hours=poll_past_hours)
+        ts = now - datetime.timedelta(
+            hours=settings.LOG_ENTRIES_POLL_PAST_HOURS
+        )
     else:
         ts = datetime.datetime.strptime(
             polling_timestamp, "%Y-%m-%d %H:%M:%S.%f%z"
@@ -97,7 +93,7 @@ def handler(event, context):
     processing_timestamp = db.get_now()
     try:
         log_entries = list(
-            pagerduty.iter_all(LOG_ENTRIES_ENDPOINT, params=params)
+            pagerduty.iter_all(settings.LOG_ENTRIES_ENDPOINT, params=params)
         )
     except PDClientError:
         msg = "Error reading Log Entries from PagerDuty instance"

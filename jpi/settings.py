@@ -27,7 +27,14 @@ JIRA_INCIDENT_SEVERITY = "SEV-0"
 # PagerDuty settings
 
 PAGERDUTY_USER_NAME = os.environ["PAGERDUTY_USER_NAME"]
+LOG_ENTRIES_ENDPOINT = "/log_entries"
+LOG_ENTRIES_POLL_PAST_HOURS = \
+    int(os.environ.get("LOG_ENTRIES_POLL_PAST_HOURS", 1))
 
 # Logging settings
 
 LOGGING_FORMAT = "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"
+
+# Database settings
+
+ISSUE_KEY_FIELD_NAME = "issueKey"
