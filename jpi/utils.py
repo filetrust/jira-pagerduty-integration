@@ -111,7 +111,7 @@ def create_jira_incident(summary, description="", incident_manager=None):
         "project": {"key": settings.INCIDENT_PROJECT_KEY},
         "summary": summary,
         "description": description,
-        "issuetype": {"name": "Bug"},
+        "issuetype": {"name": settings.INCIDENT_PROJECT_KEY.title()},
         "priority": {"name": "Highest"},
     }
     severity_field_id = get_jira_severity_field_id()
@@ -125,7 +125,7 @@ def create_jira_incident(summary, description="", incident_manager=None):
             "project": {"key": settings.QUESTION_PROJECT_KEY},
             "summary": q["summary"],
             "description": q["description"],
-            "issuetype": {"name": "Bug"},
+            "issuetype": {"name": settings.QUESTION_PROJECT_KEY.title()},
         }
         question = jira.create_issue(fields=question_dict)
         link_issue(question, issue.key, "has question")

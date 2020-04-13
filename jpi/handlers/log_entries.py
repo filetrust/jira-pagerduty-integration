@@ -55,7 +55,7 @@ def handle_log_entry(log_entry):
         issue_dict = {
             "project": {"key": settings.TIMELINE_PROJECT_KEY},
             "summary": log_entry["summary"],
-            "issuetype": {"name": "Bug"},
+            "issuetype": {"name": settings.TIMELINE_PROJECT_KEY.title()},
         }
         try:
             timeline_issue = jira.create_issue(fields=issue_dict)

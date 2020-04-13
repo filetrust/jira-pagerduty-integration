@@ -25,6 +25,26 @@ auth = HTTPBasicAuth(settings.JIRA_USER_EMAIL, settings.JIRA_API_TOKEN)
 headers = {"Accept": "application/json", "Content-Type": "application/json"}
 
 
+def create_issue_type(name, description="", issue_type_type="standard"):
+    payload = json.dumps({
+        "name": name,
+        "description": description,
+        "type": issue_type_type
+    })
+
+    response = requests.post(
+        f"{settings.JIRA_API_URL}/issuetype",
+        data=payload,
+        headers=headers,
+        auth=auth,
+    )
+
+    if not response.ok:
+        response.raise_for_status()
+    else:
+        logger.info(f'Issue type "{name}" successfully created')
+
+
 def create_project(key, name):
     """
     This method (as you can see) is implemented by means of `requests`
@@ -74,7 +94,7 @@ def create_issue(project_key, summary):
     issue_dict = {
         "project": {"key": project_key},
         "summary": summary,
-        "issuetype": {"name": "Bug"},
+        "issuetype": {"name": project_key.title()},
     }
     try:
         issue = jira.create_issue(fields=issue_dict)
@@ -114,7 +134,9 @@ if __name__ == "__main__":
 
     project = create_project(settings.QUESTION_PROJECT_KEY, "Questions")
     if project:
-        pass
+        create_issue(settings.QUESTION_PROJECT_KEY, fake.sentence())
+        create_issue(settings.QUESTION_PROJECT_KEY, fake.sentence())
+        create_issue(settings.QUESTION_PROJECT_KEY, fake.sentence())
 
     project = create_project(settings.TIMELINE_PROJECT_KEY, "Timeline")
     if project:
@@ -158,7 +180,7 @@ if __name__ == "__main__":
         issue_dict = {
             "project": {"key": settings.PERSON_PROJECT_KEY},
             "summary": settings.PAGERDUTY_USER_NAME,
-            "issuetype": {"name": "Story"},
+            "issuetype": {"name": settings.PERSON_PROJECT_KEY.title()},
         }
         jira.create_issue(fields=issue_dict)
         logger.info(
