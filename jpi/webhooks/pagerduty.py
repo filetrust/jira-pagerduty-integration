@@ -59,7 +59,7 @@ def handle_resolved_incident(message):
         if done_transition_ids:
             try:
                 jira.transition_issue(issue, done_transition_ids[0])
-                db.resolve_incident(incident_id)
+                utils.resolve_incident(incident_id)
             except JIRAError:
                 logger.exception("Error occurred during resolving Jira issue")
 

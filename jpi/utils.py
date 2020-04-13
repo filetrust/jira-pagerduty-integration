@@ -6,8 +6,7 @@ from jira import JIRA
 from jira.exceptions import JIRAError
 from pdpyras import APISession
 
-from jpi import settings
-
+from jpi import settings, db
 
 jira = None
 pagerduty = None
@@ -137,3 +136,17 @@ def create_jira_incident(summary, description="", incident_manager=None):
     if incident_manager:
         link_issue(incident_manager.key, issue.key, "has incident manager")
     return issue
+
+
+def resolve_incident(incident_id):
+    db.put_incident(incident_id, {settings.RESOLVED_FIELD_NAME: db.get_now()})
+
+
+def last_polling_timestamp():
+    return db.get_config_parameter(settings.LAST_POLLING_TIMESTAMP_PARAM)
+
+
+def update_polling_timestamp(timestamp):
+    return db.update_config_parameter(
+        settings.LAST_POLLING_TIMESTAMP_PARAM, timestamp
+    )

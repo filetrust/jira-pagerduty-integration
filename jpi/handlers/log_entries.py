@@ -17,15 +17,14 @@ def handle_priority_change_log_entry(log_entry):
     if pattern.match(log_entry["summary"]):
         logger.info("[{}] {}".format(log_entry["id"], log_entry["summary"]))
         agent = log_entry["agent"]
-        incident_manager = utils.get_incident_manager(agent["summary"])
         incident = log_entry["incident"]
         issue_key = db.get_issue_key_by_incident_id(incident["id"])
-        incident_fields = {}
-        incident_fields["priority"] = log_entry["channel"]["new_priority"][
-            "summary"
-        ]
+        incident_fields = {
+            "priority": log_entry["channel"]["new_priority"]["summary"]
+        }
         if not issue_key:
             # Issue doesn't exist, let's create it.
+            incident_manager = utils.get_incident_manager(agent["summary"])
             issue = utils.create_jira_incident(
                 incident["summary"], incident_manager=incident_manager
             )
@@ -78,7 +77,7 @@ def handle_log_entry(log_entry):
 def handler(event, context):
     result = {"ok": True}
     pagerduty = utils.get_pagerduty()
-    polling_timestamp = db.last_polling_timestamp()
+    polling_timestamp = utils.last_polling_timestamp()
     if not polling_timestamp:
         now = datetime.datetime.now(pytz.utc)
         ts = now - datetime.timedelta(
@@ -112,6 +111,6 @@ def handler(event, context):
             handle_log_entry(log_entry)
 
     # anyway put last timestamp the the db at the end of last issues polling
-    db.update_polling_timestamp(processing_timestamp)
+    utils.update_polling_timestamp(processing_timestamp)
 
     return result

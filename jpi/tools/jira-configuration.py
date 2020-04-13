@@ -28,7 +28,7 @@ headers = {"Accept": "application/json", "Content-Type": "application/json"}
 def create_project(key, name):
     """
     This method (as you can see) is implemented by means of `requests`
-    but not `jira` library. I wasn't able to work arround "You must
+    but not `jira` library. I wasn't able to work around "You must
     specify a valid project lead" error while creating a project.
     """
     project = None
@@ -114,9 +114,7 @@ if __name__ == "__main__":
 
     project = create_project(settings.QUESTION_PROJECT_KEY, "Questions")
     if project:
-        create_issue(settings.QUESTION_PROJECT_KEY, fake.sentence())
-        create_issue(settings.QUESTION_PROJECT_KEY, fake.sentence())
-        create_issue(settings.QUESTION_PROJECT_KEY, fake.sentence())
+        pass
 
     project = create_project(settings.TIMELINE_PROJECT_KEY, "Timeline")
     if project:

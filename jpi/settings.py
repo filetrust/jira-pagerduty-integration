@@ -17,6 +17,13 @@ INCIDENT_MANAGER_ISSUE_TYPE_NAME = "Incident Manager"
 TIMELINE_ISSUE_TYPE_NAME = "Timeline"
 STAKEHOLDER_ISSUE_TYPE_NAME = "Stakeholder"
 
+GLASSWALL_JIRA_PROJECT_NAMES = [
+    "incident",
+    "person",
+    "timeline",
+    "question",
+]
+
 INCIDENT_PROJECT_KEY = os.environ["INCIDENT_PROJECT_KEY"]
 PERSON_PROJECT_KEY = os.environ["PERSON_PROJECT_KEY"]
 TIMELINE_PROJECT_KEY = os.environ["TIMELINE_PROJECT_KEY"]

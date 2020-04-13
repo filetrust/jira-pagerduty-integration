@@ -37,7 +37,7 @@ def webhook_handler(event):
                         }
                     ],
                 )
-                db.resolve_incident(incident_id)
+                utils.resolve_incident(incident_id)
             except Exception:
                 msg = (
                     f"[{incident_id}] Exception occurred during updating of "
