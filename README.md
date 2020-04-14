@@ -104,8 +104,7 @@ dotenv run python -m jpi.tools.issue-types
 #### Step 2
 
 To check Project creation open in browser
-[Projects - Jira](https://glasswall-dev.atlassian.net/secure/BrowseProjects
-.jspa)
+[Projects - Jira](https://glasswall-dev.atlassian.net/secure/BrowseProjects.jspa)
 
 Navigate to 
 [Issue Type Schemes - Jira](https://glasswall-dev.atlassian.net/secure/admin/ManageIssueTypeSchemes!default.jspa)
