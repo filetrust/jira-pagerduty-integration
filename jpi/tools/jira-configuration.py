@@ -2,12 +2,12 @@ import logging
 import sys
 
 from faker import Faker
-from jira.exceptions import JIRAError
 import json
 import requests
-from requests.auth import HTTPBasicAuth
+from requests.exceptions import HTTPError
 
 from jpi import settings, utils
+from jpi.api import jira
 
 
 logging.basicConfig(
@@ -18,11 +18,7 @@ logging.basicConfig(
     for p in ["faker.factory", "urllib3"]
 ]
 logger = logging.getLogger()
-jira = utils.get_jira()
 fake = Faker()
-auth = HTTPBasicAuth(settings.JIRA_USER_EMAIL, settings.JIRA_API_TOKEN)
-
-headers = {"Accept": "application/json", "Content-Type": "application/json"}
 
 
 def create_project(key, name):
@@ -33,8 +29,8 @@ def create_project(key, name):
     """
     project = None
     try:
-        project = jira.project(key)
-    except JIRAError as error:
+        project = jira.get_project(key)
+    except HTTPError as error:
         if error.status_code == 404:
             pass
         else:
@@ -44,30 +40,10 @@ def create_project(key, name):
         logger.info(f'Project "{name}" already exists. Skipping...')
         return project
 
-    template_key = "com.pyxis.greenhopper.jira:gh-simplified-kanban-classic"
-    payload = json.dumps(
-        {
-            "name": name,
-            "projectTypeKey": "software",
-            "projectTemplateKey": template_key,
-            "key": key,
-            "leadAccountId": jira.myself()["accountId"],
-        }
-    )
+    jira.create_project(key, name)
+    logger.info(f'Project "{name}" successfully created')
 
-    response = requests.post(
-        f"{settings.JIRA_API_URL}/project",
-        data=payload,
-        headers=headers,
-        auth=auth,
-    )
-
-    if not response.ok:
-        response.raise_for_status()
-    else:
-        logger.info(f'Project "{name}" successfully created')
-
-    return jira.project(key)
+    return jira.get_project(key)
 
 
 def create_issue(project_key, summary):
@@ -78,25 +54,24 @@ def create_issue(project_key, summary):
     }
     try:
         issue = jira.create_issue(fields=issue_dict)
-        logger.info(f'Issue "{issue.key}" successfully created')
-    except JIRAError:
+        issue_key = issue['key']
+        logger.info(f'Issue "{issue_key}" successfully created')
+    except HTTPError:
         logger.exception("Error occurred while creating an issue")
 
 
-def create_issue_link_type(name, outward, inward):
-    payload = json.dumps({"name": name, "outward": outward, "inward": inward})
-
-    response = requests.post(
-        f"{settings.JIRA_API_URL}/issueLinkType",
-        data=payload,
-        headers=headers,
-        auth=auth,
-    )
-
-    if not response.ok:
-        response.raise_for_status()
+def create_issue_link_type(issue_link_type, outward, inward):
+    for link_type in jira.get_issue_link_types():
+        if link_type['name'] == issue_link_type:
+            msg = (
+                f'Issue link type "{issue_link_type}" '
+                f"already exists. Skipping..."
+            )
+            logger.info(msg)
+            break
     else:
-        logger.info(f'Issue link type "{name}" successfully created')
+        jira.create_issue_link_type(issue_link_type, outward, inward)
+        logger.info(f'Issue link type "{issue_link_type}" created')
 
 
 if __name__ == "__main__":
@@ -124,30 +99,13 @@ if __name__ == "__main__":
         create_issue(settings.TIMELINE_PROJECT_KEY, fake.sentence())
         create_issue(settings.TIMELINE_PROJECT_KEY, fake.sentence())
 
-    for issue_link_type in jira.issue_link_types():
-        if issue_link_type.name == settings.QUESTION_ISSUE_TYPE_NAME:
-            msg = (
-                f'Issue link type "{settings.QUESTION_ISSUE_TYPE_NAME}" '
-                f"already exists. Skipping..."
-            )
-            logger.info(msg)
-            break
-    else:
-        create_issue_link_type(
-            settings.QUESTION_ISSUE_TYPE_NAME, "has question", "is question of"
-        )
-
-    for issue_link_type in jira.issue_link_types():
-        if issue_link_type.name == settings.INCIDENT_MANAGER_ISSUE_TYPE_NAME:
-            msg = 'Issue link type "{}" already exists. Skipping...'
-            logger.info(msg.format(settings.INCIDENT_MANAGER_ISSUE_TYPE_NAME))
-            break
-    else:
-        create_issue_link_type(
-            settings.INCIDENT_MANAGER_ISSUE_TYPE_NAME,
-            "has incident manager",
-            "is incident manager of",
-        )
+    create_issue_link_type(
+        settings.QUESTION_ISSUE_TYPE_NAME, "has question", "is question of")
+    create_issue_link_type(
+        settings.INCIDENT_MANAGER_ISSUE_TYPE_NAME,
+        "has incident manager",
+        "is incident manager of"
+    )
 
     query = 'project={} and summary~"{}"'.format(
         settings.PERSON_PROJECT_KEY, settings.PAGERDUTY_USER_NAME
@@ -157,34 +115,24 @@ if __name__ == "__main__":
         msg = 'Person "{}" already exists. Skipping...'
         logger.info(msg.format(settings.PAGERDUTY_USER_NAME))
     else:
-        issue_dict = {
+        fields = {
             "project": {"key": settings.PERSON_PROJECT_KEY},
             "summary": settings.PAGERDUTY_USER_NAME,
             "issuetype": {"name": "Story"},
         }
-        jira.create_issue(fields=issue_dict)
+        jira.create_issue(fields)
         logger.info(
             f'Person "{settings.PAGERDUTY_USER_NAME}" successfully created'
         )
 
-    for issue_link_type in jira.issue_link_types():
-        if issue_link_type.name == settings.TIMELINE_ISSUE_TYPE_NAME:
-            msg = 'Issue link type "{}" already exists. Skipping...'
-            logger.info(msg.format(settings.INCIDENT_MANAGER_ISSUE_TYPE_NAME))
-            break
-    else:
-        create_issue_link_type(
-            settings.TIMELINE_ISSUE_TYPE_NAME, "has timeline", "is timeline of"
-        )
+    create_issue_link_type(
+        settings.TIMELINE_ISSUE_TYPE_NAME,
+        "has timeline",
+        "is timeline of"
+    )
 
-    for issue_link_type in jira.issue_link_types():
-        if issue_link_type.name == settings.STAKEHOLDER_ISSUE_TYPE_NAME:
-            msg = 'Issue link type "{}" already exists. Skipping...'
-            logger.info(msg.format(settings.STAKEHOLDER_ISSUE_TYPE_NAME))
-            break
-    else:
-        create_issue_link_type(
-            settings.STAKEHOLDER_ISSUE_TYPE_NAME,
-            "has stakeholder",
-            "is stakeholder of",
-        )
+    create_issue_link_type(
+        settings.STAKEHOLDER_ISSUE_TYPE_NAME,
+        "has stakeholder",
+        "is stakeholder of"
+    )

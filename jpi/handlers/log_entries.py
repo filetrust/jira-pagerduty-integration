@@ -1,12 +1,13 @@
 import datetime
 import logging
 import re
+from requests.exceptions import HTTPError
 
-from jira.exceptions import JIRAError
 from pdpyras import PDClientError
 import pytz
 
 from jpi import db, settings, utils
+from jpi.api import jira
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -34,7 +35,6 @@ def handle_priority_change_log_entry(log_entry):
 
 
 def handle_log_entry(log_entry):
-    jira = utils.get_jira()
     logger.info("[{}] New log entry found".format(log_entry["id"]))
 
     if log_entry["type"] == "priority_change_log_entry":
@@ -47,26 +47,30 @@ def handle_log_entry(log_entry):
             "[{}] Related issue found: {}".format(log_entry["id"], issue_key)
         )
         try:
-            jira.issue(issue_key)
-        except JIRAError:
+            jira.get_issue(issue_key)
+        except HTTPError:
             msg = "[{}] Error occurred while retrieving Jira issue"
             logger.exception(msg.format(log_entry["id"]))
             return
 
-        issue_dict = {
+        fields = {
             "project": {"key": settings.TIMELINE_PROJECT_KEY},
             "summary": log_entry["summary"],
             "issuetype": {"name": "Bug"},
         }
         try:
-            timeline_issue = jira.create_issue(fields=issue_dict)
+            timeline_issue = jira.create_issue(fields)
             logger.info(
                 'Timeline issue "{}" successfully created'.format(
-                    timeline_issue.key
+                    timeline_issue['key']
                 )
             )
-            utils.link_issue(timeline_issue.key, issue_key, "has timeline")
-        except JIRAError:
+            utils.link_issue(
+                timeline_issue['key'],
+                issue_key,
+                settings.TIMELINE_ISSUE_TYPE_NAME
+            )
+        except HTTPError:
             msg = "[{}] Error creating timeline link to Jira issue {}"
             logger.exception(msg.format(issue_key))
             return

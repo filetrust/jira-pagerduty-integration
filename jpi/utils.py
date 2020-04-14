@@ -1,31 +1,18 @@
 import json
 import logging
 import os
+from requests.exceptions import HTTPError
 
-from jira import JIRA
-from jira.exceptions import JIRAError
 from pdpyras import APISession
 
 from jpi import settings
+from jpi.api import jira
 
 
-jira = None
 pagerduty = None
 questions = None
-logger = logging.getLogger()
 severity_field_id = None
-
-
-def get_jira():
-    global jira
-    if jira is None:
-        options = {"server": settings.JIRA_SERVER_URL}
-        basic_auth = (
-            settings.JIRA_USER_EMAIL,
-            settings.JIRA_API_TOKEN,
-        )
-        jira = JIRA(options, basic_auth=basic_auth)
-    return jira
+logger = logging.getLogger()
 
 
 def get_pagerduty():
@@ -63,11 +50,10 @@ def link_issue(outward, inward, link_type):
     of link to create. `inward` and `outward` are the keys of the
     issues that are being linked.
     """
-    jira = get_jira()
     try:
         jira.create_issue_link(link_type, inward, outward)
         logger.info(f'Issue link type "{link_type}" successfully created')
-    except JIRAError:
+    except HTTPError:
         logger.exception(
             f'Error occurred during creating a link between "{outward}" '
             f'and "{inward}" issues using the type of link "{link_type}"'
@@ -81,9 +67,8 @@ def get_jira_severity_field_id():
     global severity_field_id
     if severity_field_id:
         return severity_field_id
-    jira = get_jira()
     severity_fields = [
-        f for f in jira.fields()
+        f for f in jira.get_fields()
         if f["name"] == settings.JIRA_SEVERITY_FIELD_NAME
     ]
     if severity_fields:
@@ -95,45 +80,49 @@ def get_incident_manager(fullname):
     """
     Return an incident manager by his/her full name.
     """
-    jira = get_jira()
     persons = jira.search_issues(
         f'project={settings.PERSON_PROJECT_KEY} and summary~"{fullname}"'
     )
-    if persons:
-        return persons[0]
+    if persons['issues']:
+        return persons['issues'][0]
 
 
-def create_jira_incident(summary, description="", incident_manager=None):
+def create_jira_incident(summary, description=None, incident_manager=None):
     """
     Create Jira issue in project with key `INCIDENT`.
     """
-    jira = get_jira()
-    issue_dict = {
+    fields = {
         "project": {"key": settings.INCIDENT_PROJECT_KEY},
         "summary": summary,
-        "description": description,
         "issuetype": {"name": "Bug"},
         "priority": {"name": "Highest"},
     }
+    if description:
+        fields['description'] = description
     severity_field_id = get_jira_severity_field_id()
     if severity_field_id:
-        issue_dict[severity_field_id] = {
+        fields[severity_field_id] = {
             "value": settings.JIRA_INCIDENT_SEVERITY
         }
-    issue = jira.create_issue(fields=issue_dict)
+    issue = jira.create_issue(fields)
     for q in get_questions():
-        question_dict = {
+        fields = {
             "project": {"key": settings.QUESTION_PROJECT_KEY},
             "summary": q["summary"],
             "description": q["description"],
             "issuetype": {"name": "Bug"},
         }
-        question = jira.create_issue(fields=question_dict)
-        link_issue(question, issue.key, "has question")
+        question = jira.create_issue(fields)
+        link_issue(
+            question['key'], issue['key'], settings.QUESTION_ISSUE_TYPE_NAME)
     stakeholders = settings.JIRA_ISSUE_STAKEHOLDERS
     stakeholders = [q for q in stakeholders.split(",") if q]
     for s in stakeholders:
-        link_issue(s, issue.key, "has stakeholder")
+        link_issue(s, issue['key'], settings.STAKEHOLDER_ISSUE_TYPE_NAME)
     if incident_manager:
-        link_issue(incident_manager.key, issue.key, "has incident manager")
+        link_issue(
+            incident_manager['key'],
+            issue['key'],
+            settings.INCIDENT_MANAGER_ISSUE_TYPE_NAME
+        )
     return issue
