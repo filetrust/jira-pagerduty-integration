@@ -7,6 +7,7 @@ provider:
   runtime: python3.7
   stage: ${env:STAGE}
   cfnRole: ${env:CFN_ROLE_ARN}
+  timeout: 60
   iamRoleStatements:
     - Effect: Allow
       Action:
