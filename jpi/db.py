@@ -101,4 +101,3 @@ def get_config_parameter(name):
     )
     if response.get("Count", 0) > 0:
         return response.get("Items")[0].get(settings.CONFIG_VALUE_FIELD_NAME)
-

@@ -2,8 +2,6 @@ import logging
 import sys
 
 from faker import Faker
-import json
-import requests
 from requests.exceptions import HTTPError
 
 from jpi import settings
