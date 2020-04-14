@@ -5,7 +5,6 @@ import urllib.parse
 
 from jpi import settings
 
-
 session = requests.Session()
 session.auth = HTTPBasicAuth(settings.JIRA_USER_EMAIL, settings.JIRA_API_TOKEN)
 session.headers = {
@@ -38,19 +37,15 @@ def jira_post_request(uri, data):
 
 def text2doc(text):
     return {
-      "type": "doc",
-      "version": 1,
-      "content": [
-        {
-          "type": "paragraph",
-          "content": [
-            {
-              "text": text,
-              "type": "text"
-            }
-          ]
-        }
-      ]
+        "type": "doc",
+        "version": 1,
+        "content": [{
+            "type": "paragraph",
+            "content": [{
+                "text": text,
+                "type": "text"
+            }]
+        }]
     }
 
 
@@ -141,3 +136,13 @@ def create_issue_link_type(name, outward, inward):
 
 def get_issue_link_types():
     return jira_get_request('/issueLinkType')['issueLinkTypes']
+
+
+def create_issue_type(name, description="", issue_type_type="standard"):
+    data = {"name": name, "description": description, "type": issue_type_type}
+    return jira_post_request('/issuetype', data)
+
+
+def get_issue_types():
+    return jira_get_request('/issuetype')
+

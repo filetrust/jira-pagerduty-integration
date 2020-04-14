@@ -6,7 +6,7 @@ import json
 import requests
 from requests.exceptions import HTTPError
 
-from jpi import settings, utils
+from jpi import settings
 from jpi.api import jira
 
 
@@ -22,23 +22,16 @@ fake = Faker()
 
 
 def create_issue_type(name, description="", issue_type_type="standard"):
-    payload = json.dumps({
-        "name": name,
-        "description": description,
-        "type": issue_type_type
-    })
-
-    response = requests.post(
-        f"{settings.JIRA_API_URL}/issuetype",
-        data=payload,
-        headers=headers,
-        auth=auth,
-    )
-
-    if not response.ok:
-        response.raise_for_status()
-    else:
+    issue_type = None
+    try:
+        issue_type = jira.create_issue_type(name, description, issue_type_type)
         logger.info(f'Issue type "{name}" successfully created')
+    except HTTPError as error:
+        if error.status_code == 409:
+            logger.info(f'Issue type "{name}" already exists. Skipping...')
+        else:
+            logger.exception("Error occurred while creating an issue")
+    return issue_type
 
 
 def create_project(key, name):
