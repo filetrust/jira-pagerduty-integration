@@ -31,7 +31,7 @@ def create_project(key, name):
     try:
         project = jira.get_project(key)
     except HTTPError as error:
-        if error.status_code == 404:
+        if error.response.status_code == 404:
             pass
         else:
             raise
