@@ -29,13 +29,11 @@ def webhook_handler(event):
             try:
                 pagerduty.rput(
                     settings.INCIDENT_ENDPOINT,
-                    json=[
-                        {
-                            "id": incident_id,
-                            "type": "incident",
-                            "status": settings.STATUS_RESOLVED,
-                        }
-                    ],
+                    json=[{
+                        "id": incident_id,
+                        "type": "incident_reference",
+                        "status": settings.STATUS_RESOLVED,
+                    }],
                 )
                 utils.resolve_incident(incident_id)
             except Exception:
