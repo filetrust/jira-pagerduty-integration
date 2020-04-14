@@ -30,7 +30,7 @@ def handle_priority_change_log_entry(log_entry):
             issue = utils.create_jira_incident(
                 incident["summary"], incident_manager=incident_manager
             )
-            incident_fields[settings.ISSUE_KEY_FIELD_NAME] = issue.key
+            incident_fields[settings.ISSUE_KEY_FIELD_NAME] = issue['key']
         db.put_incident(incident["id"], incident_fields)
 
 
