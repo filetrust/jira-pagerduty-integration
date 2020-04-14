@@ -1,8 +1,8 @@
 import logging
-
-from jira.exceptions import JIRAError
+from requests.exceptions import HTTPError
 
 from jpi import db, settings, utils
+from jpi.api import jira
 
 
 logger = logging.getLogger()
@@ -37,13 +37,10 @@ def handle_triggered_incident(message):
                     entry["channel"]["details"],
                     incident_manager=incident_manager,
                 )
-                issue_key = issue.key
-                incident_fields[settings.ISSUE_KEY_FIELD_NAME] = issue_key
+                incident_fields[settings.ISSUE_KEY_FIELD_NAME] = issue['key']
                 db.put_incident(incident_id, incident_fields)
     else:
         db.put_incident(incident_id, incident_fields)
-
-    return issue_key
 
 
 def handle_resolved_incident(message):
@@ -51,17 +48,15 @@ def handle_resolved_incident(message):
     incident_id = incident["id"]
     issue_key = db.get_issue_key_by_incident_id(incident_id)
     if issue_key:
-        jira = utils.get_jira()
-        issue = jira.issue(issue_key)
-        done_transition_ids = [
-            t["id"] for t in jira.transitions(issue) if t["name"] == "Done"
-        ]
-        if done_transition_ids:
-            try:
-                jira.transition_issue(issue, done_transition_ids[0])
-                utils.resolve_incident(incident_id)
-            except JIRAError:
-                logger.exception("Error occurred during resolving Jira issue")
+        try:
+            jira.get_issue(issue_key)
+        except HTTPError:
+            logger.exception("Error occurred when getting Jira issue")
+        try:
+            jira.mark_issue_as_done(issue_key)
+            utils.resolve_incident(incident_id)
+        except HTTPError:
+            logger.exception("Error occurred while resolving Jira issue")
 
 
 def webhook_handler(event):
