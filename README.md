@@ -66,7 +66,7 @@ sls dynamodb start
 
 ### PagerDuty API tokens
 
-Go to [API Access Keys](https://atykhonov2.pagerduty.com/api_keys) and
+Go to [API Access Keys](https://glasswall-dev.pagerduty.com/api_keys) and
 create a new API key.
 
 ### Jira API tokens
@@ -79,7 +79,7 @@ create an API token.
 Copy `.env.example` to `.env` and edit it. Put your email to
 `JIRA_USER_EMAIL` and `PAGERDUTY_USER_EMAIL`, put the API tokens to
 `JIRA_API_TOKEN` and `PAGERDUTY_API_TOKEN`, put your atlassian root
-URL (e.g. https://username.atlassian.net) to `JIRA_SERVER_URL`.
+URL (e.g. https://glasswall-dev.atlassian.net) to `JIRA_SERVER_URL`.
 
 Put the full name of PagerDuty user into `PAGERDUTY_USER_NAME`
 variable (this is for the dev and test environments only, i.e. no
@@ -104,10 +104,11 @@ dotenv run python -m jpi.tools.issue-types
 #### Step 2
 
 To check Project creation open in browser
-[Projects - Jira](https://olegtaranenko.atlassian.net/secure/BrowseProjects.jspa)
+[Projects - Jira](https://glasswall-dev.atlassian.net/secure/BrowseProjects
+.jspa)
 
 Navigate to 
-[Issue Type Schemes - Jira](https://olegtaranenko.atlassian.net/secure/admin/ManageIssueTypeSchemes!default.jspa)
+[Issue Type Schemes - Jira](https://glasswall-dev.atlassian.net/secure/admin/ManageIssueTypeSchemes!default.jspa)
 Issue Type Schemes at the beginning
 ![Issue Types](docs/images/IssueTypes-Initial.png)
 
@@ -132,7 +133,7 @@ dotenv run python -m jpi.tools.jiraconfiguration
 ## PagerDuty configuration
 
 Go to [Incident Priority Settings
-](https://glasswall-qa.pagerduty.com/account/incident_priorities) and
+](https://glasswall-dev.pagerduty.com/account/incident_priorities) and
 make sure that Incident Priority Levels are enabled.
 
 ## AWS configuration
@@ -173,7 +174,7 @@ webhooks (read below).
 
 ## Configure PagerDuty webhook
 
-Go to [Extensions](https://yourusername.pagerduty.com/extensions) and
+Go to [Extensions](https://glasswall-dev.pagerduty.com/extensions) and
 create a webhook with `Extension Type` equals to `Generic V2 Webhook`,
 `Name` equals to `jpi`, `Service` equals to any available service that
 you created before and URL equals to `<ngrok-url>/pagerduty-webhook`.
@@ -181,7 +182,7 @@ you created before and URL equals to `<ngrok-url>/pagerduty-webhook`.
 ## Configure Jira webhook
 
 Go to [System
-WebHooks](https://yourusername.atlassian.net/plugins/servlet/webhooks)
+WebHooks](https://glasswall-dev.atlassian.net/plugins/servlet/webhooks)
 and create a webhook with any convenient name and with URL equals to
 `<ngrok-url>/jira-webhook`.
 
