@@ -111,7 +111,7 @@ if __name__ == "__main__":
         settings.PERSON_PROJECT_KEY, settings.PAGERDUTY_USER_NAME
     )
     persons = jira.search_issues(query)
-    if persons:
+    if persons['issues']:
         msg = 'Person "{}" already exists. Skipping...'
         logger.info(msg.format(settings.PAGERDUTY_USER_NAME))
     else:
