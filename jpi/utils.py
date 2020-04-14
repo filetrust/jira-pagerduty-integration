@@ -5,7 +5,7 @@ from requests.exceptions import HTTPError
 
 from pdpyras import APISession
 
-from jpi import settings, db
+from jpi import settings
 from jpi.api import jira
 
 

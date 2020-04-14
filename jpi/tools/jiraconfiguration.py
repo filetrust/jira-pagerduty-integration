@@ -27,7 +27,7 @@ def create_issue_type(name, description="", issue_type_type="standard"):
         issue_type = jira.create_issue_type(name, description, issue_type_type)
         logger.info(f'Issue type "{name}" successfully created')
     except HTTPError as error:
-        if error.status_code == 409:
+        if error.response.status_code == 409:
             logger.info(f'Issue type "{name}" already exists. Skipping...')
         else:
             logger.exception("Error occurred while creating an issue")
@@ -44,7 +44,7 @@ def create_project(key, name):
     try:
         project = jira.get_project(key)
     except HTTPError as error:
-        if error.status_code == 404:
+        if error.response.status_code == 404:
             pass
         else:
             raise
@@ -124,7 +124,7 @@ if __name__ == "__main__":
         settings.PERSON_PROJECT_KEY, settings.PAGERDUTY_USER_NAME
     )
     persons = jira.search_issues(query)
-    if persons:
+    if persons['issues']:
         msg = 'Person "{}" already exists. Skipping...'
         logger.info(msg.format(settings.PAGERDUTY_USER_NAME))
     else:

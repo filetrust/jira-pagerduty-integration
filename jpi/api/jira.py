@@ -5,6 +5,7 @@ import urllib.parse
 
 from jpi import settings
 
+
 session = requests.Session()
 session.auth = HTTPBasicAuth(settings.JIRA_USER_EMAIL, settings.JIRA_API_TOKEN)
 session.headers = {
@@ -37,15 +38,19 @@ def jira_post_request(uri, data):
 
 def text2doc(text):
     return {
-        "type": "doc",
-        "version": 1,
-        "content": [{
-            "type": "paragraph",
-            "content": [{
-                "text": text,
-                "type": "text"
-            }]
-        }]
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "text": text,
+              "type": "text"
+            }
+          ]
+        }
+      ]
     }
 
 
