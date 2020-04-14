@@ -95,6 +95,7 @@ def handler(event, context):
 
     params = {"since": str(ts)}
     processing_timestamp = db.get_now()
+    db.update_polling_timestamp(processing_timestamp)
     try:
         log_entries = list(
             pagerduty.iter_all(settings.LOG_ENTRIES_ENDPOINT, params=params)
@@ -116,6 +117,5 @@ def handler(event, context):
             handle_log_entry(log_entry)
 
     # anyway put last timestamp the the db at the end of last issues polling
-    db.update_polling_timestamp(processing_timestamp)
 
     return result
