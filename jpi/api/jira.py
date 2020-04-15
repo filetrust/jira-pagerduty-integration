@@ -61,6 +61,7 @@ def create_project(key, name):
         "projectTypeKey": "software",
         "projectTemplateKey": template_key,
         "key": key.upper(),
+        "assigneeType": "UNASSIGNED",
         "leadAccountId": myself()["accountId"],
     }
     jira_post_request('/project', data)
