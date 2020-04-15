@@ -142,3 +142,13 @@ def create_issue_link_type(name, outward, inward):
 
 def get_issue_link_types():
     return jira_get_request('/issueLinkType')['issueLinkTypes']
+
+
+def create_issue_type(name, description="", issue_type_type="standard"):
+    data = {"name": name, "description": description, "type": issue_type_type}
+    return jira_post_request('/issuetype', data)
+
+
+def get_issue_types():
+    return jira_get_request('/issuetype')
+

@@ -5,7 +5,7 @@ from requests.exceptions import HTTPError
 
 from pdpyras import APISession
 
-from jpi import settings
+from jpi import settings, db
 from jpi.api import jira
 
 
@@ -94,7 +94,7 @@ def create_jira_incident(summary, description=None, incident_manager=None):
     fields = {
         "project": {"key": settings.INCIDENT_PROJECT_KEY},
         "summary": summary,
-        "issuetype": {"name": "Bug"},
+        "issuetype": {"name": settings.INCIDENT_PROJECT_KEY.title()},
         "priority": {"name": "Highest"},
     }
     if description:
@@ -110,7 +110,7 @@ def create_jira_incident(summary, description=None, incident_manager=None):
             "project": {"key": settings.QUESTION_PROJECT_KEY},
             "summary": q["summary"],
             "description": q["description"],
-            "issuetype": {"name": "Bug"},
+            "issuetype": {"name": settings.QUESTION_PROJECT_KEY.title()},
         }
         question = jira.create_issue(fields)
         link_issue(
@@ -126,3 +126,17 @@ def create_jira_incident(summary, description=None, incident_manager=None):
             settings.INCIDENT_MANAGER_ISSUE_TYPE_NAME
         )
     return issue
+
+
+def resolve_incident(incident_id):
+    db.put_incident(incident_id, {settings.RESOLVED_FIELD_NAME: db.get_now()})
+
+
+def last_polling_timestamp():
+    return db.get_config_parameter(settings.LAST_POLLING_TIMESTAMP_PARAM)
+
+
+def update_polling_timestamp(timestamp):
+    return db.update_config_parameter(
+        settings.LAST_POLLING_TIMESTAMP_PARAM, timestamp
+    )

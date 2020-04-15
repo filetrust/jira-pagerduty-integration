@@ -54,7 +54,7 @@ def handle_resolved_incident(message):
             logger.exception("Error occurred when getting Jira issue")
         try:
             jira.mark_issue_as_done(issue_key)
-            db.resolve_incident(incident_id)
+            utils.resolve_incident(incident_id)
         except HTTPError:
             logger.exception("Error occurred while resolving Jira issue")
 

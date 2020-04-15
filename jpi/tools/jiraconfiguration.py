@@ -2,11 +2,9 @@ import logging
 import sys
 
 from faker import Faker
-import json
-import requests
 from requests.exceptions import HTTPError
 
-from jpi import settings, utils
+from jpi import settings
 from jpi.api import jira
 
 
@@ -21,10 +19,23 @@ logger = logging.getLogger()
 fake = Faker()
 
 
+def create_issue_type(name, description="", issue_type_type="standard"):
+    issue_type = None
+    try:
+        issue_type = jira.create_issue_type(name, description, issue_type_type)
+        logger.info(f'Issue type "{name}" successfully created')
+    except HTTPError as error:
+        if error.response.status_code == 409:
+            logger.info(f'Issue type "{name}" already exists. Skipping...')
+        else:
+            logger.exception("Error occurred while creating an issue")
+    return issue_type
+
+
 def create_project(key, name):
     """
     This method (as you can see) is implemented by means of `requests`
-    but not `jira` library. I wasn't able to work arround "You must
+    but not `jira` library. I wasn't able to work around "You must
     specify a valid project lead" error while creating a project.
     """
     project = None
@@ -50,7 +61,7 @@ def create_issue(project_key, summary):
     issue_dict = {
         "project": {"key": project_key},
         "summary": summary,
-        "issuetype": {"name": "Bug"},
+        "issuetype": {"name": project_key.title()},
     }
     try:
         issue = jira.create_issue(fields=issue_dict)
@@ -118,7 +129,7 @@ if __name__ == "__main__":
         fields = {
             "project": {"key": settings.PERSON_PROJECT_KEY},
             "summary": settings.PAGERDUTY_USER_NAME,
-            "issuetype": {"name": "Story"},
+            "issuetype": {"name": settings.PERSON_PROJECT_KEY.title()},
         }
         jira.create_issue(fields)
         logger.info(

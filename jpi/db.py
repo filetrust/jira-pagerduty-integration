@@ -38,10 +38,6 @@ def put_incident(incident_id, incident_fields=None):
     return incidents_table.put_item(Item=item)
 
 
-def resolve_incident(incident_id):
-    put_incident(incident_id, {settings.RESOLVED_FIELD_NAME: get_now()})
-
-
 def get_incident_by_id(incident_id, resolved=False):
     incidents = resource.Table(settings.INCIDENTS_TABLE)
     response = incidents.query(
@@ -105,13 +101,3 @@ def get_config_parameter(name):
     )
     if response.get("Count", 0) > 0:
         return response.get("Items")[0].get(settings.CONFIG_VALUE_FIELD_NAME)
-
-
-def last_polling_timestamp():
-    return get_config_parameter(settings.LAST_POLLING_TIMESTAMP_PARAM)
-
-
-def update_polling_timestamp(timestamp):
-    return update_config_parameter(
-        settings.LAST_POLLING_TIMESTAMP_PARAM, timestamp
-    )
