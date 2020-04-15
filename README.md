@@ -84,7 +84,7 @@ URL (e.g. https://glasswall-dev.atlassian.net) to `JIRA_SERVER_URL`.
 Put the full name of PagerDuty user into `PAGERDUTY_USER_NAME`
 variable (this is for the dev and test environments only, i.e. no
 needs to have the variable configured on production
-environment). During execution of `jpi.tools.jira-configuration` (see
+environment). During execution of `jpi.tools.jira_configuration` (see
 below) the full name is used to create a Jira issue in `PERSON`
 project. When a Jira issue is created by the integration, a Jira issue
 (in `PERSON` project) is searched by PagerDuty assignee. If the issue
@@ -99,7 +99,7 @@ development purposes), execute the following steps:
 #### Step 1
 Create **issue types** and **projects**
 ```
-dotenv run python -m jpi.tools.issue-types
+dotenv run python -m jpi.tools.issue_types
 ```
 #### Step 2
 
@@ -126,7 +126,7 @@ The final screen should looks like
 
 Run script to finalize JIRA configuration.
 ```
-dotenv run python -m jpi.tools.jiraconfiguration
+dotenv run python -m jpi.tools.jira_configuration
 ```
 
 ## PagerDuty configuration
@@ -146,7 +146,7 @@ aws configure
 Then do the remaining AWS configurations using the following command:
 
 ```
-./jpi/tools/aws-configuration.sh
+./jpi/tools/aws_configuration.sh
 ```
 
 The command creates a role and outputs its ARN. Put the ARN into
