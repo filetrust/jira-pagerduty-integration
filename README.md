@@ -163,42 +163,27 @@ inputed.
 
 ## Scheduled functions
 
-The functionality of the project depends on `cron` and
-`log_entries_polling` functions that should be executed
-periodically. On a dev environment these functions are not executed
-periodically so they should be manually trigerred when you need them
-to be executed, e.g.:
+The functionality of the project depends on `log_entries` function
+that should be executed periodically. On a dev environment the
+function is not executed periodically so it should be manually
+trigerred when you need it to be executed, e.g.:
 
 ```
-IS_OFFLINE=True sls invoke local -f log_entries_polling
+IS_OFFLINE=True sls invoke local -f log_entries
 ```
 
 Create an incident with `Incident Priority` equals to `P2`. An
 incident created with priority other than `P1` shouldn't be
 automatically created in Jira. But, accordingly to the requirements,
 when priority is changed to `P1` an issue should be created in
-Jira. The responsibility of `cron` function is to monitor the existing
-incidents and act respectively on priority change. Change `Incident
-Priority` to `P1` of the recently created incident and execute the
-following command:
+Jira. Change `Incident Priority` to `P1` of the recently created
+incident and execute the following command:
 
 ```
-IS_OFFLINE=True sls invoke local -f cron
+IS_OFFLINE=True sls invoke local -f log_entries
 ```
 
-You should get something like the following in response:
-
-```
-{
-    "retrieved": 26,
-    "created": 1,
-    "changed": 0,
-    "tracked": 0
-}
-```
-
-As you can see `Created` equals to `1` which means that the priority
-change was succesfully detected and Jira issue was created.
+Open Jira and check that the issue was created.
 
 # Deploy serverless application to dev environment (AWS)
 
