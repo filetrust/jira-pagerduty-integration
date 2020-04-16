@@ -48,20 +48,6 @@ and other dependencies:
 npm install
 ```
 
-## Install and run local DynamoDB
-
-Install DynamoDB by means of the following command:
-
-```
-sls dynamodb install
-```
-
-and start it
-
-```
-sls dynamodb start
-```
-
 ## PagerDuty and Jira API tokens
 
 ### PagerDuty API tokens
@@ -118,6 +104,20 @@ Then do the remaining AWS configurations using the following command:
 
 The command creates `jpi-cfn-role` role and outputs its ARN. Put the
 ARN into `CFN_ROLE_ARN` variable (`.env` file).
+
+## Install and run local DynamoDB
+
+Install DynamoDB by means of the following command:
+
+```
+sls dynamodb install
+```
+
+and start it
+
+```
+sls dynamodb start
+```
 
 ## Serve the WSGI application locally
 
