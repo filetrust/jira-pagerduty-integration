@@ -206,11 +206,11 @@ endpoints:
 
 Use the endpoint URL to configure the webhooks in PagerDuty and Jira.
 
-In order to execute the scheduled functions (`cron` or
-`log_entries_polling`) use the following command:
+In order to execute the scheduled functions (e.g. `log_entries`) use
+the following command:
 
 ```
-sls invoke local -f cron
+sls invoke local -f log_entries
 ```
 
 # Deploy serverless application to qa environment
