@@ -99,7 +99,7 @@ development purposes), execute the following steps:
 #### Step 1
 Create **issue types** and **projects**
 ```
-dotenv run python -m jpi.tools.issue_types
+dotenv run python -m jpi.tools.jira_configuration --step 1
 ```
 #### Step 2
 
@@ -125,8 +125,9 @@ The final screen should looks like
 #### Step 3
 
 Run script to finalize JIRA configuration.
+
 ```
-dotenv run python -m jpi.tools.jira_configuration
+dotenv run python -m jpi.tools.jira_configuration --step 2
 ```
 
 ## PagerDuty configuration

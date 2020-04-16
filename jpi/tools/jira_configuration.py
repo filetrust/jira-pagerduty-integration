@@ -1,3 +1,4 @@
+import argparse
 import logging
 import sys
 
@@ -85,7 +86,17 @@ def create_issue_link_type(issue_link_type, outward, inward):
         logger.info(f'Issue link type "{issue_link_type}" created')
 
 
-if __name__ == "__main__":
+def step1():
+    for project_key in settings.GLASSWALL_JIRA_PROJECT_KEYS:
+        issue_type_key = project_key.title()
+        create_project(project_key, f'{issue_type_key}s')
+        create_issue_type(
+            issue_type_key,
+            description=f"Corresponding to Glasswall {issue_type_key}"
+        )
+
+
+def step2():
     project = create_project(settings.PERSON_PROJECT_KEY, "Persons")
     if project:
         create_issue(settings.PERSON_PROJECT_KEY, fake.name())
@@ -147,3 +158,18 @@ if __name__ == "__main__":
         "has stakeholder",
         "is stakeholder of"
     )
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description='Jira configuration tool.')
+    parser.add_argument('-s', '--step', dest='step', type=int, required=True)
+
+    args = parser.parse_args()
+
+    if args.step == 1:
+        step1()
+    elif args.step == 2:
+        step2()
+    else:
+        raise Exception('Invalid step number. Allowed values: 1 and 2')
