@@ -116,8 +116,8 @@ Then do the remaining AWS configurations using the following command:
 ./jpi/tools/aws_configuration.sh
 ```
 
-The command creates a role and outputs its ARN. Put the ARN into
-`CFN_ROLE_ARN` variable (`.env` file).
+The command creates `jpi-cfn-role` role and outputs its ARN. Put the
+ARN into `CFN_ROLE_ARN` variable (`.env` file).
 
 ## Serve the WSGI application locally
 
