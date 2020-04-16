@@ -129,6 +129,12 @@ def step2():
         "is incident manager of"
     )
 
+    if not settings.PAGERDUTY_USER_NAME:
+        msg = (
+            "`PAGERDUTY_USER_NAME` setting is not defined. "
+            "It should be provided via an environment variable."
+        )
+        raise Exception(msg)
     query = 'project={} and summary~"{}"'.format(
         settings.PERSON_PROJECT_KEY, settings.PAGERDUTY_USER_NAME
     )
