@@ -141,9 +141,10 @@ webhooks (read below).
 ## Configure PagerDuty webhook
 
 Go to [Extensions](https://glasswall-dev.pagerduty.com/extensions) and
-create a webhook with `Extension Type` equals to `Generic V2 Webhook`,
-`Name` equals to `jpi`, `Service` equals to any available service that
-you created before and URL equals to `<ngrok-url>/pagerduty-webhook`.
+create a New Extension with `Extension Type` equals to `Generic V2
+Webhook`, `Name` equals to `jpi`, `Service` equals to any available
+service that you created before and URL equals to
+`<ngrok-url>/pagerduty-webhook`.
 
 ## Configure Jira webhook
 
