@@ -99,7 +99,7 @@ aws configure
 Then do the remaining AWS configurations using the following command:
 
 ```
-./jpi/tools/aws_configuration.sh
+dotenv run python -m jpi.tools.aws_configuration
 ```
 
 The command creates `jpi-cfn-role` role and outputs its ARN. Put the
