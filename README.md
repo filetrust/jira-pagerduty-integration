@@ -1,3 +1,17 @@
+# Jira Cloud and PagerDuty integration
+
+## Requirements
+
+- Python 3.7
+- Pipenv
+- Node.js and npm (can be installed by means of `nodeenv`, see below)
+- AWS account
+- Jira account
+- PagerDuty account
+- account on serverless.com and access to `glasswall` organization
+  (optional, they are required for `qa` and `prod` environments only)
+- ngrok (optional, it is useful for dev purposes only)
+
 # Project installation and configuration
 
 Clone the project:
