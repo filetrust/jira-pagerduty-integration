@@ -56,9 +56,9 @@ LOGGING_FORMAT = "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"
 
 DATABASE_ENDPOINT_URL = "http://localhost:8002"
 
-INCIDENTS_TABLE = os.environ["INCIDENTS_TABLE"]
-LOG_ENTRIES_TABLE = os.environ["LOG_ENTRIES_TABLE"]
-CONFIG_TABLE = os.environ["CONFIG_TABLE"]
+INCIDENTS_TABLE = os.environ.get("INCIDENTS_TABLE", "incidents-dev")
+LOG_ENTRIES_TABLE = os.environ.get("LOG_ENTRIES_TABLE", "log-entries-dev")
+CONFIG_TABLE = os.environ.get("CONFIG_TABLE", "config-dev")
 
 CONFIG_PARAMETER_FIELD_NAME = "parameterName"
 CONFIG_VALUE_FIELD_NAME = "value"
