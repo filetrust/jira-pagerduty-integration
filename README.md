@@ -12,7 +12,7 @@
   (optional, they are required for `qa` and `prod` environments only)
 - ngrok (optional, it is useful for dev purposes only)
 
-# Project installation and configuration
+## Project installation and configuration
 
 Clone the project:
 
@@ -26,22 +26,22 @@ and cd to the project directory:
 cd jira-pagerduty-integration
 ```
 
-## Make and activate a virtual environment:
+### Make and activate a virtual environment:
 
 ```
 pipenv --python 3.7
 source $(pipenv --venv)/bin/activate
 ```
 
-## Install python dependencies
+### Install python dependencies
 
 ```
 pipenv install --dev
 ```
 
-## Install `serverless`:
+### Install `serverless`:
 
-### Install `npm`
+#### Install `npm`
 
 If you don't have `npm` installed, you can install it by means of the
 following command:
@@ -62,19 +62,19 @@ and other dependencies:
 npm install
 ```
 
-## PagerDuty and Jira API tokens
+### PagerDuty and Jira API tokens
 
-### PagerDuty API tokens
+#### PagerDuty API tokens
 
 Go to [API Access Keys](https://glasswall-dev.pagerduty.com/api_keys) and
 create a new API key.
 
-### Jira API tokens
+#### Jira API tokens
 
 Go to [API tokens](https://id.atlassian.com/manage/api-tokens) and
 create an API token.
 
-## Create a configuration file
+### Create a configuration file
 
 Copy `.env.example` to `.env` and edit it. Put your email to
 `JIRA_USER_EMAIL` and `PAGERDUTY_USER_EMAIL`, put the API tokens to
@@ -91,18 +91,18 @@ project. When a Jira issue is created by the integration, a Jira issue
 is found then it is linked to the newly created issue using `Incident
 Manager` link type.
 
-## Jira configuration
+### Jira configuration
 
 In order to generate fake Jira projects and issues (for testing and
 development purposes) see [Jira configuration](JIRA_CONFIGURATION.md).
 
-## PagerDuty configuration
+### PagerDuty configuration
 
 Go to [Incident Priority Settings
 ](https://glasswall-dev.pagerduty.com/account/incident_priorities) and
 make sure that Incident Priority Levels are enabled.
 
-## AWS configuration
+### AWS configuration
 
 Configure `awscli` on your machine:
 
@@ -119,7 +119,7 @@ dotenv run python -m jpi.tools.aws_configuration
 The command creates `jpi-cfn-role` role and outputs its ARN. Put the
 ARN into `CFN_ROLE_ARN` variable (`.env` file).
 
-## Install and run local DynamoDB
+### Install and run local DynamoDB
 
 Install DynamoDB by means of the following command:
 
@@ -133,7 +133,7 @@ and start it
 sls dynamodb start
 ```
 
-## Serve the WSGI application locally
+### Serve the WSGI application locally
 
 Execute the following command in order to start the local server:
 
@@ -141,7 +141,7 @@ Execute the following command in order to start the local server:
 sls wsgi serve
 ```
 
-## Expose your local web server.
+### Expose your local web server.
 
 Download, install and execute [ngrok](https://ngrok.com):
 
@@ -152,7 +152,7 @@ ngrok http 5000
 Use the https URL to create the URLs for PagerDuty and Jira
 webhooks (read below).
 
-## Configure PagerDuty webhook
+### Configure PagerDuty webhook
 
 Go to [Extensions](https://glasswall-dev.pagerduty.com/extensions) and
 create a New Extension with `Extension Type` equals to `Generic V2
@@ -160,14 +160,14 @@ Webhook`, `Name` equals to `jpi`, `Service` equals to any available
 service that you created before and URL equals to
 `<ngrok-url>/pagerduty-webhook`.
 
-## Configure Jira webhook
+### Configure Jira webhook
 
 Go to [System
 WebHooks](https://glasswall-dev.atlassian.net/plugins/servlet/webhooks)
 and create a webhook with any convenient name and with URL equals to
 `<ngrok-url>/jira-webhook`.
 
-## Test the configuration
+### Test the configuration
 
 Go to PagerDuty and create an incident with any `Impacted Service`,
 with any convenient `Title` and with `Incident Priority` equals to
@@ -175,7 +175,7 @@ with any convenient `Title` and with `Incident Priority` equals to
 should see the newly created issue with the same title you just
 inputed.
 
-## Scheduled functions
+### Scheduled functions
 
 The functionality of the project depends on `log_entries` function
 that should be executed periodically. On a dev environment the
@@ -199,7 +199,7 @@ IS_OFFLINE=True sls invoke local -f log_entries
 
 Open Jira and check that the issue was created.
 
-# Deploy serverless application to dev environment (AWS)
+## Deploy serverless application to dev environment (AWS)
 
 In order to deploy the application execute the following command:
 
@@ -227,7 +227,7 @@ the following command:
 sls invoke local -f log_entries
 ```
 
-# Deploy serverless application to qa environment
+## Deploy serverless application to qa environment
 
 In order to deploy the application to qa environment execute the
 following commands:
