@@ -1,13 +1,21 @@
 # Jira configuration
 
-In order to generate fake Jira projects and issues (for testing and
-development purposes), execute the following steps:
+In order to configure Jira Cloud (for testing and development
+purposes) execute the steps described below. The commands create
+projects, issue types etc. The commands create the same projects as we
+have on [official Jira Cloud](http://glasswall.atlassian.net/). So
+basically the commands were created in order to mimic the official
+Jira with its projects (such as `Incident`, `Person`), issue types
+(again `Incident`, `Person`) and so on.
 
 ## Step 1
+
 Create **issue types** and **projects**
+
 ```
 dotenv run python -m jpi.tools.jira_configuration --step 1
 ```
+
 ## Step 2
 
 To check Project creation open in browser

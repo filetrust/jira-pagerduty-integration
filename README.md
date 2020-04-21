@@ -4,13 +4,56 @@
 
 - Python 3.7
 - Pipenv
+- Docker
 - Node.js and npm (can be installed by means of `nodeenv`, see below)
 - AWS account
-- Jira account
+- Jira Cloud account
 - PagerDuty account
-- account on serverless.com and access to `glasswall` organization
-  (optional, they are required for `qa` and `prod` environments only)
+- account on [Serverless](https://serverless.com) and access to
+  `glasswall` organization (optional);
 - ngrok (optional, it is useful for dev purposes only)
+
+## Project overview
+
+The integration allows to automatically copy to Jira Cloud the changes
+made by a user on PagerDuty and wise versa. For instance, a Jira issue
+is created when a user creates an incident (with P1 priority) on
+PagerDuty.
+
+### Generic architecture notes
+
+In order to handle a change made by a user on either PagerDuty or on
+Jira Cloud the webhooks are employed. For sorry not all changes are
+possible to handle by means of the webhooks. If Jira allows an admin
+to create a webhook for almost all events that might occur on Jira
+Cloud, in contrast, PagerDuty has limited set of available
+webhooks. For instance, there is a webhook for the events when an
+incident was created, but there is no a webhook for tracking when an
+incident was updated (see the [Developer
+Documentation](https://v2.developer.pagerduty.com/docs/webhooks-v2-overview)
+for more details). As a workaround the changes are periodically
+fetched from PagerDuty REST API by means of the scheduled function
+(see `jpi.handlers.log_entries.handler`). All the events that happen
+to an Incident are exposed as Log Entries that are available via
+`/log_entries` API endpoint (see [REST API
+Reference](https://developer.pagerduty.com/api-reference/reference/REST/openapiv3.json/paths/~1log_entries/get)
+for more details). By means of the log entries the changes (such as
+priority change) are tracked by the integration and are copied to Jira
+Cloud. The scheduled function is executed periodically (interval is
+defined in `PAGERDUTY_POLL_INTERVAL` environment variable). It is
+executed automatically only in the deployments made to an account on
+[Serverless](https://serverless.com). On any other environments the
+scheduled function should be manually executed.
+
+### Deployment notes
+
+This `README.md` first of all is devoted to developers and for
+development purposes. Thus here a lot of information on how to create
+a local development environment from the scratch. The information
+highlights all details of the project, its configuration etc. If you
+need to just deploy the integration please refer to [Deployment to
+serverless dev
+environment](#deployment-to-serverless-dev-environment).
 
 ## Project installation and configuration
 
@@ -39,7 +82,7 @@ source $(pipenv --venv)/bin/activate
 pipenv install --dev
 ```
 
-### Install `serverless`:
+### Install Node.js dependencies
 
 #### Install `npm`
 
@@ -66,7 +109,7 @@ npm install
 
 #### PagerDuty API tokens
 
-Go to [API Access Keys](https://glasswall-dev.pagerduty.com/api_keys) and
+Go to [API Access Keys](https://username.pagerduty.com/api_keys) and
 create a new API key.
 
 #### Jira API tokens
@@ -79,7 +122,7 @@ create an API token.
 Copy `.env.example` to `.env` and edit it. Put your email to
 `JIRA_USER_EMAIL` and `PAGERDUTY_USER_EMAIL`, put the API tokens to
 `JIRA_API_TOKEN` and `PAGERDUTY_API_TOKEN`, put your atlassian root
-URL (e.g. https://glasswall-dev.atlassian.net) to `JIRA_SERVER_URL`.
+URL (e.g. https://username.atlassian.net) to `JIRA_SERVER_URL`.
 
 Put the full name of PagerDuty user into `PAGERDUTY_USER_NAME`
 variable (this is for the dev and test environments only, i.e. no
@@ -93,13 +136,13 @@ Manager` link type.
 
 ### Jira configuration
 
-In order to generate fake Jira projects and issues (for testing and
-development purposes) see [Jira configuration](JIRA_CONFIGURATION.md).
+In order to configure Jira Cloud (for testing and development
+purposes) see [Jira configuration](JIRA_CONFIGURATION.md).
 
 ### PagerDuty configuration
 
 Go to [Incident Priority Settings
-](https://glasswall-dev.pagerduty.com/account/incident_priorities) and
+](https://username.pagerduty.com/account/incident_priorities) and
 make sure that Incident Priority Levels are enabled.
 
 ### AWS configuration
@@ -154,18 +197,18 @@ webhooks (read below).
 
 ### Configure PagerDuty webhook
 
-Go to [Extensions](https://glasswall-dev.pagerduty.com/extensions) and
+Go to [Extensions](https://username.pagerduty.com/extensions) and
 create a New Extension with `Extension Type` equals to `Generic V2
 Webhook`, `Name` equals to `jpi`, `Service` equals to any available
 service that you created before and URL equals to
-`<ngrok-url>/pagerduty-webhook`.
+`<endpoint-url>/pagerduty-webhook`.
 
 ### Configure Jira webhook
 
 Go to [System
-WebHooks](https://glasswall-dev.atlassian.net/plugins/servlet/webhooks)
+WebHooks](https://username.atlassian.net/plugins/servlet/webhooks)
 and create a webhook with any convenient name and with URL equals to
-`<ngrok-url>/jira-webhook`.
+`<endpoint-url>/jira-webhook`.
 
 ### Test the configuration
 
@@ -199,7 +242,7 @@ IS_OFFLINE=True sls invoke local -f log_entries
 
 Open Jira and check that the issue was created.
 
-## Deploy serverless application to dev environment (AWS)
+## Deployment to remote AWS dev environment
 
 In order to deploy the application execute the following command:
 
@@ -227,15 +270,74 @@ the following command:
 sls invoke local -f log_entries
 ```
 
-## Deploy serverless application to qa environment
+## Deployment to Serverless dev environment
 
-In order to deploy the application to qa environment execute the
-following commands:
+1) [Clone the project](#project-installation-and-configuration),
+install [python](#install-python-dependencies) and
+[Node.js](#install-nodejs-dependencies) dependencies. Create `.env`
+and change the settings in it;
+
+2) Be sure that you have been invited to `glasswall` organization on
+[Serverless](https://serverless.com); if not, please ask an owner
+([Andrii Tykhonov](mailto:atykhonov+glasswall@gmail.com)) to invite
+you.
+
+3) [Create CFN Service Role](#aws-configuration) on AWS (the role
+should be used for `CFN_ROLE_ARN` variable);
+
+4) [Create API tokens](#pagerduty-and-jira-api-tokens) on PagerDuty
+and Jira Cloud;
+
+5) Log into Serverless by means of the command `sls login`;
+
+6) Deploy the integration to glasswall organization on
+[Serverless](https://serverless.com) by means of `sls deploy` command;
+
+7) `sls deploy` should output the endpoints like this:
 
 ```
-sls login
+endpoints:
+  ANY - https://io9tozfjve.execute-api.us-east-1.amazonaws.com/prod
+  ANY - https://io9tozfjve.execute-api.us-east-1.amazonaws.com/prod/{proxy+}
+```
+
+8) Use the first endpoint to configure the webhooks on
+[PagerDuty](#configure-pagerduty-webhook) and [Jira
+Cloud](#configure-jira-webhook);
+
+9) Configure [PagerDuty](#pagerduty-configuration) and [Jira
+Cloud](#jira-configuration);
+
+10) Create an issue on PagerDuty (with P1 priority) and check that it
+is copied to Jira Cloud.
+
+## Deployment to Serverless qa environment
+
+Everything that you need in order to deploy to Serverless qa
+environment is basically described in the [previous
+section](#deployment-to-serverless-dev-environment). Instead of `.env`
+please create `.env.qa` file with its own settings. Please make sure
+that it contains `STAGE=qa`. And use the following command in order to
+deploy the integration:
+
+```
 sls deploy --env qa
 ```
 
-The scheduled functions should be executed automatically (no needs to
-execute them manually).
+## Deployment to Serverless prod environment
+
+Everything required for prod deployment is described in the [previous
+sections](#deployment-to-serverless-dev-environment). Instead of
+`.env` please create `.env.prod` file with its own settings. Please
+make sure that it contains `STAGE=prod`. And use the following command
+in order to deploy the integration:
+
+```
+sls deploy --env prod
+```
+
+Please note that the section contains information about PagerDuty and
+Jira configuration. Please skip the configuration, you don't need to
+configure them for prod environment (of course it is still required to
+create the API tokens and the webhooks for both PagerDuty and Jira
+Cloud).
